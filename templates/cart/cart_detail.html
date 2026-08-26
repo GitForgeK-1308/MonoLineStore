@@ -1,0 +1,107 @@
+{% extends "core/base.html" %}
+
+{% block title %}Корзина | MONO LINE{% endblock %}
+
+{% block content %}
+<h1>Корзина</h1>
+
+{% if cart_items %}
+    {% for item in cart_items %}
+        <article>
+            <h2>
+                <a
+                    href="{% url 'products:product_detail' item.product_slug %}"
+                >
+                    {{ item.product_name }}
+                </a>
+            </h2>
+
+            <p>
+                Цвет: {{ item.color }}
+            </p>
+
+            <p>
+                Размер: {{ item.size }}
+            </p>
+
+            <div>
+                <form
+                    method="post"
+                    action="{% url 'cart:decrease_cart_quantity' item.variant_id %}"
+                >
+                    {% csrf_token %}
+                    <button type="submit">
+                        −
+                    </button>
+                </form>
+            
+                <span>
+                    {{ item.quantity }}
+                </span>
+            
+                <form
+                    method="post"
+                    action="{% url 'cart:increase_cart_quantity' item.variant_id %}"
+                >
+                    {% csrf_token %}
+                    <button
+                        type="submit"
+                        {% if item.quantity >= item.available_stock %}disabled{% endif %}
+                    >
+                        +
+                    </button>
+                </form>
+            </div>
+            
+            <form
+                method="post"
+                action="{% url 'cart:remove_from_cart' item.variant_id %}"
+            >
+                {% csrf_token %}
+            
+                <button type="submit">
+                    Удалить
+                </button>
+            </form>
+
+            {% if item.has_discount %}
+                <p>
+                    <del>{{ item.old_price }} ₽</del>
+                    {{ item.price }} ₽
+                </p>
+            {% else %}
+                <p>
+                    {{ item.price }} ₽
+                </p>
+            {% endif %}
+
+            <p>
+                Итого за позицию:
+                {{ item.item_total }} ₽
+            </p>
+
+            {% if not item.quantity_available %}
+                <p>
+                    Доступно только {{ item.available_stock }} шт.
+                </p>
+            {% endif %}
+        </article>
+    {% endfor %}
+
+    <hr>
+
+    <p>
+        Товаров: {{ total_quantity }}
+    </p>
+
+    <strong>
+        Итого: {{ total_price }} ₽
+    </strong>
+{% else %}
+    <p>Корзина пока пуста.</p>
+
+    <a href="{% url 'products:catalog' %}">
+        Перейти в каталог
+    </a>
+{% endif %}
+{% endblock %}

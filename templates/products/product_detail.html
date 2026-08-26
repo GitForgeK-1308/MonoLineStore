@@ -32,7 +32,13 @@
     {% endif %}
 
     {% if form.color.field.choices %}
-        <h2>Варианты</h2>
+    <h2>Варианты</h2>
+
+    <form
+        method="post"
+        action="{% url 'cart:add_to_cart' product.slug %}"
+    >
+        {% csrf_token %}
 
         <p>{{ form.color.label }}</p>
         {{ form.color }}
@@ -42,7 +48,15 @@
 
         <p>{{ form.quantity.label }}</p>
         {{ form.quantity }}
-    {% endif %}
+
+        <button
+            type="submit"
+            {% if not has_stock %}disabled{% endif %}
+        >
+            Добавить в корзину
+        </button>
+    </form>
+{% endif %}
 </section>
 
 {% if viewed_products %}
