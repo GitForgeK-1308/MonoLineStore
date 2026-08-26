@@ -285,3 +285,169 @@ class CheckoutViewTests(TestCase):
             response.status_code,
             404,
         )
+
+
+class OrderHistoryViewTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user(
+            email="orders-history@example.com",
+            password="StrongPassword123!",
+        )
+
+        cls.other_user = User.objects.create_user(
+            email="other-history@example.com",
+            password="StrongPassword123!",
+        )
+
+        cls.order = Order.objects.create(
+            user=cls.user,
+            first_name="Иван",
+            phone="+79990000000",
+            email="orders-history@example.com",
+            address="Москва",
+            total_price=Decimal("5000.00"),
+        )
+
+        cls.other_order = Order.objects.create(
+            user=cls.other_user,
+            first_name="Пётр",
+            phone="+79991111111",
+            email="other-history@example.com",
+            address="Омск",
+            total_price=Decimal("7000.00"),
+        )
+
+    def setUp(self):
+        self.client.force_login(
+            self.user,
+        )
+
+    def test_order_list_requires_authentication(self):
+        self.client.logout()
+
+        response = self.client.get(
+            reverse("orders:my_orders"),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            302,
+        )
+
+    def test_order_list_is_available(self):
+        response = self.client.get(
+            reverse("orders:my_orders"),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            200,
+        )
+        self.assertTemplateUsed(
+            response,
+            "orders/my_orders.html",
+        )
+
+    def test_order_list_contains_only_current_user_orders(self):
+        response = self.client.get(
+            reverse("orders:my_orders"),
+        )
+
+        orders = list(
+            response.context["orders"],
+        )
+
+        self.assertIn(
+            self.order,
+            orders,
+        )
+        self.assertNotIn(
+            self.other_order,
+            orders,
+        )
+
+    def test_order_detail_requires_authentication(self):
+        self.client.logout()
+
+        response = self.client.get(
+            reverse(
+                "orders:order_detail",
+                args=[self.order.pk],
+            )
+        )
+
+        self.assertEqual(
+            response.status_code,
+            302,
+        )
+
+    def test_order_detail_is_available_to_owner(self):
+        response = self.client.get(
+            reverse(
+                "orders:order_detail",
+                args=[self.order.pk],
+            )
+        )
+
+        self.assertEqual(
+            response.status_code,
+            200,
+        )
+        self.assertTemplateUsed(
+            response,
+            "orders/order_detail.html",
+        )
+        self.assertEqual(
+            response.context["order"],
+            self.order,
+        )
+
+    def test_order_detail_is_not_available_to_another_user(self):
+        response = self.client.get(
+            reverse(
+                "orders:order_detail",
+                args=[self.other_order.pk],
+            )
+        )
+
+        self.assertEqual(
+            response.status_code,
+            404,
+        )
+
+    def test_unknown_order_returns_404(self):
+        response = self.client.get(
+            reverse(
+                "orders:order_detail",
+                args=[999999],
+            )
+        )
+
+        self.assertEqual(
+            response.status_code,
+            404,
+        )
+
+    def test_order_list_is_paginated_by_ten(self):
+        for number in range(10):
+            Order.objects.create(
+                user=self.user,
+                first_name="Иван",
+                phone="+79990000000",
+                email="orders-history@example.com",
+                address=f"Адрес {number}",
+                total_price=Decimal("1000.00"),
+            )
+
+        response = self.client.get(
+            reverse("orders:my_orders"),
+        )
+
+        self.assertTrue(
+            response.context["is_paginated"],
+        )
+        self.assertEqual(
+            response.context["paginator"].per_page,
+            10,
+        )

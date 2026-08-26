@@ -1,6 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.generic import DetailView, ListView
 
 from cart.services import (
     CART_SESSION_KEY,
@@ -86,3 +88,31 @@ def order_success(request, order_id):
             "order": order,
         },
     )
+
+
+class OrderListView(LoginRequiredMixin, ListView):
+    model = Order
+    template_name = "orders/my_orders.html"
+    context_object_name = "orders"
+    paginate_by = 10
+
+    def get_queryset(self):
+        return (
+            Order.objects.filter(
+                user=self.request.user,
+            )
+            .prefetch_related("items")
+            .order_by("-created_at", "-pk")
+        )
+
+
+class OrderDetailView(LoginRequiredMixin, DetailView):
+    model = Order
+    template_name = "orders/order_detail.html"
+    context_object_name = "order"
+    pk_url_kwarg = "order_id"
+
+    def get_queryset(self):
+        return Order.objects.filter(
+            user=self.request.user,
+        ).prefetch_related("items")

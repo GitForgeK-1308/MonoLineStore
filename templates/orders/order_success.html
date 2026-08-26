@@ -35,6 +35,9 @@
     </article>
 {% endfor %}
 
+<a href="{% url 'orders:my_orders' %}">
+    Посмотреть мои заказы
+</a>
 <a href="{% url 'products:catalog' %}">
     Вернуться в каталог
 </a>

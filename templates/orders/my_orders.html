@@ -1,0 +1,66 @@
+{% extends "core/base.html" %}
+
+{% block title %}Мои заказы | MONO LINE{% endblock %}
+
+{% block content %}
+<h1>Мои заказы</h1>
+
+{% if orders %}
+    {% for order in orders %}
+        <article>
+            <h2>
+                <a href="{% url 'orders:order_detail' order.pk %}">
+                    Заказ №{{ order.pk }}
+                </a>
+            </h2>
+
+            <p>
+                Дата:
+                {{ order.created_at|date:"d.m.Y H:i" }}
+            </p>
+
+            <p>
+                Статус:
+                {{ order.get_status_display }}
+            </p>
+
+            <p>
+                Позиций:
+                {{ order.items.all|length }}
+            </p>
+
+            <strong>
+                {{ order.total_price }} ₽
+            </strong>
+        </article>
+    {% endfor %}
+
+    {% if is_paginated %}
+        <nav>
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}">
+                    Назад
+                </a>
+            {% endif %}
+
+            <span>
+                {{ page_obj.number }}
+                /
+                {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">
+                    Вперёд
+                </a>
+            {% endif %}
+        </nav>
+    {% endif %}
+{% else %}
+    <p>У вас пока нет заказов.</p>
+
+    <a href="{% url 'products:catalog' %}">
+        Перейти в каталог
+    </a>
+{% endif %}
+{% endblock %}

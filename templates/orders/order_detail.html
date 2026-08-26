@@ -1,0 +1,78 @@
+{% extends "core/base.html" %}
+
+{% block title %}Заказ №{{ order.pk }} | MONO LINE{% endblock %}
+
+{% block content %}
+<a href="{% url 'orders:my_orders' %}">
+    ← Мои заказы
+</a>
+
+<h1>Заказ №{{ order.pk }}</h1>
+
+<p>
+    Дата:
+    {{ order.created_at|date:"d.m.Y H:i" }}
+</p>
+
+<p>
+    Статус:
+    {{ order.get_status_display }}
+</p>
+
+<section>
+    <h2>Доставка</h2>
+
+    <p>
+        {{ order.first_name }}
+    </p>
+
+    <p>
+        {{ order.phone }}
+    </p>
+
+    <p>
+        {{ order.email }}
+    </p>
+
+    <p>
+        {{ order.address }}
+    </p>
+
+    {% if order.comment %}
+        <p>
+            Комментарий:
+            {{ order.comment }}
+        </p>
+    {% endif %}
+</section>
+
+<section>
+    <h2>Состав заказа</h2>
+
+    {% for item in order.items.all %}
+        <article>
+            <h3>{{ item.product_name }}</h3>
+
+            <p>
+                Цвет: {{ item.color }}
+            </p>
+
+            <p>
+                Размер: {{ item.size }}
+            </p>
+
+            <p>
+                {{ item.quantity }} × {{ item.price }} ₽
+            </p>
+
+            <strong>
+                {{ item.total_price }} ₽
+            </strong>
+        </article>
+    {% endfor %}
+</section>
+
+<h2>
+    Итого: {{ order.total_price }} ₽
+</h2>
+{% endblock %}
