@@ -1,0 +1,32 @@
+{% extends "core/base.html" %}
+
+{% block title %}Каталог | MONO LINE{% endblock %}
+
+{% block content %}
+<h1>Каталог</h1>
+
+{% for product in products %}
+    <article>
+        <h2>{{ product.name }}</h2>
+        <p>{{ product.price }}</p>
+    </article>
+{% empty %}
+    <p>Товары не найдены.</p>
+{% endfor %}
+
+{% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}">
+        Назад
+    </a>
+{% endif %}
+
+<span>
+    {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+</span>
+
+{% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">
+        Вперёд
+    </a>
+{% endif %}
+{% endblock %}
