@@ -1,4 +1,4 @@
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import ROUND_HALF_UP, Decimal
 
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -153,27 +153,18 @@ class Product(models.Model):
 
     @property
     def in_stock(self):
-        return any(
-            variant.stock > 0
-            for variant in self.variants.all()
-        )
+        return any(variant.stock > 0 for variant in self.variants.all())
 
     @property
     def total_stock(self):
-        return sum(
-            variant.stock
-            for variant in self.variants.all()
-        )
+        return sum(variant.stock for variant in self.variants.all())
 
     @property
     def discounted_price(self):
         if not self.discount:
             return self.price
 
-        multiplier = (
-            Decimal(100 - self.discount)
-            / Decimal("100")
-        )
+        multiplier = Decimal(100 - self.discount) / Decimal("100")
 
         return (self.price * multiplier).quantize(
             Decimal("0.01"),
@@ -191,8 +182,7 @@ class Product(models.Model):
             raise ValidationError(
                 {
                     "product_type": (
-                        "Тип товара должен принадлежать "
-                        "выбранной категории."
+                        "Тип товара должен принадлежать выбранной категории."
                     )
                 }
             )
@@ -270,11 +260,7 @@ class ProductVariant(models.Model):
         ]
 
     def __str__(self):
-        return (
-            f"{self.product.name} / "
-            f"{self.get_color_display()} / "
-            f"{self.size}"
-        )
+        return f"{self.product.name} / {self.get_color_display()} / {self.size}"
 
 
 class ProductImage(models.Model):

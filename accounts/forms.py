@@ -5,7 +5,6 @@ from django.contrib.auth.password_validation import (
     password_validators_help_text_html,
 )
 
-
 User = get_user_model()
 
 

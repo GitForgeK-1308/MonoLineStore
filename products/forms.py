@@ -79,9 +79,7 @@ class AddToCartForm(forms.Form):
         cleaned_data = super().clean()
 
         if self.product is None:
-            raise forms.ValidationError(
-                "Товар не найден."
-            )
+            raise forms.ValidationError("Товар не найден.")
 
         color = cleaned_data.get("color")
         size = cleaned_data.get("size")
@@ -102,14 +100,10 @@ class AddToCartForm(forms.Form):
             ) from error
 
         if not variant.in_stock:
-            raise forms.ValidationError(
-                "Этот вариант товара закончился."
-            )
+            raise forms.ValidationError("Этот вариант товара закончился.")
 
         if quantity > variant.stock:
-            raise forms.ValidationError(
-                f"Доступно только {variant.stock} шт."
-            )
+            raise forms.ValidationError(f"Доступно только {variant.stock} шт.")
 
         cleaned_data["variant"] = variant
 

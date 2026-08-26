@@ -78,10 +78,7 @@ class UserProfileViewTests(TestCase):
             reverse("accounts:profile"),
         )
 
-        expected_url = (
-            f"{reverse('accounts:login')}"
-            f"?next={reverse('accounts:profile')}"
-        )
+        expected_url = f"{reverse('accounts:login')}?next={reverse('accounts:profile')}"
 
         self.assertRedirects(
             response,

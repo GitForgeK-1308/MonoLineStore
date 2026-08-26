@@ -257,9 +257,7 @@ class ProductRelationsTests(TestCase):
         with self.assertRaises(ProtectedError):
             category.delete()
 
-        self.assertTrue(
-            Product.objects.filter(pk=product.pk).exists()
-        )
+        self.assertTrue(Product.objects.filter(pk=product.pk).exists())
 
     def test_product_image_string_representation(self):
         category = Category.objects.create(

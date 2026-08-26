@@ -20,17 +20,14 @@ def search_products(
     if query.isdigit():
         return queryset.filter(pk=int(query))
 
-    search_vector = (
-        SearchVector(
-            "name",
-            weight="A",
-            config="simple",
-        )
-        + SearchVector(
-            "description",
-            weight="B",
-            config="simple",
-        )
+    search_vector = SearchVector(
+        "name",
+        weight="A",
+        config="simple",
+    ) + SearchVector(
+        "description",
+        weight="B",
+        config="simple",
     )
 
     search_query = SearchQuery(
@@ -40,8 +37,7 @@ def search_products(
     )
 
     return (
-        queryset
-        .annotate(
+        queryset.annotate(
             search_rank=SearchRank(
                 search_vector,
                 search_query,

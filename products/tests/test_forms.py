@@ -127,14 +127,8 @@ class AddToCartFormTests(TestCase):
             product=self.product,
         )
 
-        colors = [
-            value
-            for value, _ in form.fields["color"].choices
-        ]
-        sizes = [
-            value
-            for value, _ in form.fields["size"].choices
-        ]
+        colors = [value for value, _ in form.fields["color"].choices]
+        sizes = [value for value, _ in form.fields["size"].choices]
 
         self.assertEqual(
             set(colors),
