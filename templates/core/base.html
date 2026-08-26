@@ -12,6 +12,51 @@
 </head>
 
 <body class="{% block body_class %}{% endblock %}">
+    <header>
+        <a href="{% url 'core:home' %}">
+            MONO LINE
+        </a>
+
+        <nav>
+            <a href="{% url 'products:catalog' %}">
+                Каталог
+            </a>
+
+            <a href="{% url 'cart:cart_detail' %}">
+                Корзина ({{ cart_quantity }})
+            </a>
+
+            {% if user.is_authenticated %}
+                <a href="{% url 'accounts:profile' %}">
+                    Профиль
+                </a>
+
+                <a href="{% url 'orders:my_orders' %}">
+                    Мои заказы
+                </a>
+
+                <form
+                    method="post"
+                    action="{% url 'accounts:logout' %}"
+                >
+                    {% csrf_token %}
+
+                    <button type="submit">
+                        Выйти
+                    </button>
+                </form>
+            {% else %}
+                <a href="{% url 'accounts:login' %}">
+                    Войти
+                </a>
+
+                <a href="{% url 'accounts:register' %}">
+                    Регистрация
+                </a>
+            {% endif %}
+        </nav>
+    </header>
+
     {% if messages %}
         <div class="messages">
             {% for message in messages %}
@@ -25,5 +70,7 @@
     <main>
         {% block content %}{% endblock %}
     </main>
+
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

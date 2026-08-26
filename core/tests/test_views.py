@@ -1,9 +1,12 @@
 from decimal import Decimal
 
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
 from products.models import Category, Product
+
+User = get_user_model()
 
 
 class HomeViewTests(TestCase):
@@ -94,4 +97,77 @@ class HomeViewTests(TestCase):
         self.assertEqual(
             response.status_code,
             200,
+        )
+
+    def test_home_contains_guest_navigation(self):
+        response = self.client.get(
+            reverse("core:home"),
+        )
+
+        self.assertContains(
+            response,
+            reverse("accounts:login"),
+        )
+        self.assertContains(
+            response,
+            reverse("accounts:register"),
+        )
+        self.assertContains(
+            response,
+            reverse("products:catalog"),
+        )
+        self.assertContains(
+            response,
+            reverse("cart:cart_detail"),
+        )
+
+    def test_header_displays_cart_quantity(self):
+        session = self.client.session
+
+        session["cart"] = {
+            "10": 2,
+            "20": 1,
+        }
+
+        session.save()
+
+        response = self.client.get(
+            reverse("core:home"),
+        )
+
+        self.assertContains(
+            response,
+            "Корзина (3)",
+        )
+
+    def test_home_contains_authenticated_navigation(self):
+        user = User.objects.create_user(
+            email="header-user@example.com",
+            password="StrongPassword123!",
+        )
+
+        self.client.force_login(
+            user,
+        )
+
+        response = self.client.get(
+            reverse("core:home"),
+        )
+
+        self.assertContains(
+            response,
+            reverse("accounts:profile"),
+        )
+        self.assertContains(
+            response,
+            reverse("orders:my_orders"),
+        )
+
+        self.assertNotContains(
+            response,
+            reverse("accounts:login"),
+        )
+        self.assertNotContains(
+            response,
+            reverse("accounts:register"),
         )
