@@ -97,6 +97,11 @@
     <strong>
         Итого: {{ total_price }} ₽
     </strong>
+    <p>
+        <a href="{% url 'orders:checkout' %}">
+            Оформить заказ
+        </a>
+    </p>
 {% else %}
     <p>Корзина пока пуста.</p>
 

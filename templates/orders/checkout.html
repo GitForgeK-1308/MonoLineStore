@@ -1,0 +1,83 @@
+{% extends "core/base.html" %}
+
+{% block title %}Оформление заказа | MONO LINE{% endblock %}
+
+{% block content %}
+<h1>Оформление заказа</h1>
+
+<section>
+    <h2>Ваш заказ</h2>
+
+    {% for item in cart_items %}
+        <article>
+            <h3>{{ item.product_name }}</h3>
+
+            <p>
+                {{ item.color }},
+                {{ item.size }}
+            </p>
+
+            <p>
+                {{ item.quantity }} × {{ item.price }} ₽
+            </p>
+
+            <strong>
+                {{ item.item_total }} ₽
+            </strong>
+        </article>
+    {% endfor %}
+
+    <p>
+        Товаров: {{ total_quantity }}
+    </p>
+
+    <p>
+        Итого:
+        <strong>{{ total_price }} ₽</strong>
+    </p>
+</section>
+
+<section>
+    <h2>Данные покупателя</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+
+        <p>
+            {{ form.first_name.label_tag }}
+            {{ form.first_name }}
+            {{ form.first_name.errors }}
+        </p>
+
+        <p>
+            {{ form.phone.label_tag }}
+            {{ form.phone }}
+            {{ form.phone.errors }}
+        </p>
+
+        <p>
+            {{ form.email.label_tag }}
+            {{ form.email }}
+            {{ form.email.errors }}
+        </p>
+
+        <p>
+            {{ form.address.label_tag }}
+            {{ form.address }}
+            {{ form.address.errors }}
+        </p>
+
+        <p>
+            {{ form.comment.label_tag }}
+            {{ form.comment }}
+            {{ form.comment.errors }}
+        </p>
+
+        <button type="submit">
+            Оформить заказ
+        </button>
+    </form>
+</section>
+{% endblock %}

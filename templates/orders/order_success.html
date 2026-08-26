@@ -1,0 +1,41 @@
+{% extends "core/base.html" %}
+
+{% block title %}Заказ оформлен | MONO LINE{% endblock %}
+
+{% block content %}
+<h1>Заказ оформлен</h1>
+
+<p>
+    Спасибо! Ваш заказ №{{ order.pk }} успешно создан.
+</p>
+
+<p>
+    Итоговая сумма:
+    <strong>{{ order.total_price }} ₽</strong>
+</p>
+
+<h2>Состав заказа</h2>
+
+{% for item in order.items.all %}
+    <article>
+        <h3>{{ item.product_name }}</h3>
+
+        <p>
+            {{ item.color }},
+            {{ item.size }}
+        </p>
+
+        <p>
+            {{ item.quantity }} × {{ item.price }} ₽
+        </p>
+
+        <strong>
+            {{ item.total_price }} ₽
+        </strong>
+    </article>
+{% endfor %}
+
+<a href="{% url 'products:catalog' %}">
+    Вернуться в каталог
+</a>
+{% endblock %}
