@@ -80,3 +80,44 @@ class ProductCardTemplateTests(TestCase):
             "4500.00",
             html,
         )
+
+
+class CatalogTemplateTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.category = Category.objects.create(
+            name="Каталог",
+            slug="catalog-template-category",
+        )
+
+        for number in range(10):
+            Product.objects.create(
+                category=cls.category,
+                name=f"Catalog Product {number}",
+                slug=f"catalog-product-{number}",
+                price=Decimal("1000.00"),
+                discount=10,
+            )
+
+    def test_catalog_includes_catalog_stylesheet(self):
+        response = self.client.get(
+            reverse("products:catalog"),
+        )
+
+        self.assertContains(
+            response,
+            "/static/products/css/catalog.css",
+        )
+
+    def test_catalog_pagination_preserves_filters(self):
+        response = self.client.get(
+            reverse("products:catalog"),
+            {
+                "discount": "1",
+            },
+        )
+
+        self.assertContains(
+            response,
+            "?discount=1&amp;page=2",
+        )

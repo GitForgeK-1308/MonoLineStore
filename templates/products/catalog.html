@@ -1,31 +1,289 @@
 {% extends "core/base.html" %}
+{% load static %}
 
-{% block title %}Каталог | MONO LINE{% endblock %}
+{% block title %}
+    {% if current_category %}
+        {{ current_category.name }} | MONO LINE
+    {% else %}
+        Каталог | MONO LINE
+    {% endif %}
+{% endblock %}
+
+{% block extra_css %}
+    <link
+        rel="stylesheet"
+        href="{% static 'products/css/product_card.css' %}"
+    >
+    <link
+        rel="stylesheet"
+        href="{% static 'products/css/catalog.css' %}"
+    >
+{% endblock %}
 
 {% block content %}
-<h1>Каталог</h1>
+<header class="catalog-header">
+    <h1 class="catalog-title">
+        {% if current_category %}
+            {{ current_category.name }}
+        {% else %}
+            Каталог
+        {% endif %}
+    </h1>
 
-{% for product in products %}
-    {% include "products/includes/product_card.html" with product=product only %}
-{% empty %}
-    <p>Товары не найдены.</p>
-{% endfor %}
+    <p class="catalog-subtitle">
+        Найдите то, что подходит именно вам.
+    </p>
+</header>
 
-{% if page_obj.has_previous %}
-    <a href="?page={{ page_obj.previous_page_number }}">
-        Назад
-    </a>
-{% endif %}
+<div class="catalog-layout">
+    <aside class="catalog-filters">
+        <form
+            class="catalog-filters__form"
+            method="get"
+        >
+            <div class="catalog-filter">
+                <label
+                    class="catalog-filter__label"
+                    for="catalog-search"
+                >
+                    Поиск
+                </label>
 
-<span>
-    {{ page_obj.number }}
-    /
-    {{ page_obj.paginator.num_pages }}
-</span>
+                <input
+                    id="catalog-search"
+                    type="search"
+                    name="q"
+                    value="{{ query }}"
+                    placeholder="Название товара"
+                >
+            </div>
 
-{% if page_obj.has_next %}
-    <a href="?page={{ page_obj.next_page_number }}">
-        Вперёд
-    </a>
-{% endif %}
+            <div class="catalog-filter">
+                <label
+                    class="catalog-filter__label"
+                    for="catalog-gender"
+                >
+                    Пол
+                </label>
+
+                <select
+                    id="catalog-gender"
+                    name="gender"
+                >
+                    <option value="">
+                        Все
+                    </option>
+
+                    {% for item in genders %}
+                        <option
+                            value="{{ item.slug }}"
+                            {% if gender == item.slug %}selected{% endif %}
+                        >
+                            {{ item.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="catalog-filter">
+                <label
+                    class="catalog-filter__label"
+                    for="catalog-type"
+                >
+                    Тип товара
+                </label>
+
+                <select
+                    id="catalog-type"
+                    name="product_type"
+                >
+                    <option value="">
+                        Все
+                    </option>
+
+                    {% for item in product_types %}
+                        <option
+                            value="{{ item.slug }}"
+                            {% if product_type == item.slug %}selected{% endif %}
+                        >
+                            {{ item.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="catalog-filter">
+                <span class="catalog-filter__label">
+                    Цена
+                </span>
+
+                <div class="catalog-price">
+                    <input
+                        type="number"
+                        name="min_price"
+                        min="0"
+                        step="0.01"
+                        value="{{ min_price|default:'' }}"
+                        placeholder="От"
+                        aria-label="Минимальная цена"
+                    >
+
+                    <input
+                        type="number"
+                        name="max_price"
+                        min="0"
+                        step="0.01"
+                        value="{{ max_price|default:'' }}"
+                        placeholder="До"
+                        aria-label="Максимальная цена"
+                    >
+                </div>
+            </div>
+
+            <label class="catalog-filter catalog-filter--checkbox">
+                <input
+                    type="checkbox"
+                    name="in_stock"
+                    value="1"
+                    {% if in_stock %}checked{% endif %}
+                >
+
+                Только в наличии
+            </label>
+
+            <label class="catalog-filter catalog-filter--checkbox">
+                <input
+                    type="checkbox"
+                    name="is_popular"
+                    value="1"
+                    {% if is_popular %}checked{% endif %}
+                >
+
+                Популярное
+            </label>
+
+            <label class="catalog-filter catalog-filter--checkbox">
+                <input
+                    type="checkbox"
+                    name="discount"
+                    value="1"
+                    {% if has_discount %}checked{% endif %}
+                >
+
+                Со скидкой
+            </label>
+
+            <div class="catalog-filter">
+                <label
+                    class="catalog-filter__label"
+                    for="catalog-ordering"
+                >
+                    Сортировка
+                </label>
+
+                <select
+                    id="catalog-ordering"
+                    name="ordering"
+                >
+                    <option value="">
+                        Сначала новые
+                    </option>
+
+                    <option
+                        value="price_asc"
+                        {% if ordering == "price_asc" %}selected{% endif %}
+                    >
+                        Цена: по возрастанию
+                    </option>
+
+                    <option
+                        value="price_desc"
+                        {% if ordering == "price_desc" %}selected{% endif %}
+                    >
+                        Цена: по убыванию
+                    </option>
+                </select>
+            </div>
+
+            <div class="catalog-filter-actions">
+                <button
+                    class="catalog-filter-button"
+                    type="submit"
+                >
+                    Применить
+                </button>
+
+                {% if current_category %}
+                    <a
+                        class="catalog-filter-reset"
+                        href="{% url 'products:catalog' current_category.slug %}"
+                    >
+                        Сбросить
+                    </a>
+                {% else %}
+                    <a
+                        class="catalog-filter-reset"
+                        href="{% url 'products:catalog' %}"
+                    >
+                        Сбросить
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </aside>
+
+    <section class="catalog-content">
+        <div class="catalog-toolbar">
+            <p class="catalog-result-count">
+                Найдено товаров:
+                {{ page_obj.paginator.count }}
+            </p>
+        </div>
+
+        {% if products %}
+            <div class="catalog-grid">
+                {% for product in products %}
+                    {% include "products/includes/product_card.html" with product=product only %}
+                {% endfor %}
+            </div>
+
+            {% if page_obj.paginator.num_pages > 1 %}
+                <nav
+                    class="pagination"
+                    aria-label="Пагинация каталога"
+                >
+                    {% if page_obj.has_previous %}
+                        <a
+                            class="pagination__link"
+                            href="?{% if query_params %}{{ query_params }}&amp;{% endif %}page={{ page_obj.previous_page_number }}"
+                        >
+                            Назад
+                        </a>
+                    {% endif %}
+
+                    <span class="pagination__current">
+                        {{ page_obj.number }}
+                        из
+                        {{ page_obj.paginator.num_pages }}
+                    </span>
+
+                    {% if page_obj.has_next %}
+                        <a
+                            class="pagination__link"
+                            href="?{% if query_params %}{{ query_params }}&amp;{% endif %}page={{ page_obj.next_page_number }}"
+                        >
+                            Вперёд
+                        </a>
+                    {% endif %}
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="catalog-empty">
+                <p>
+                    По выбранным параметрам товары не найдены.
+                </p>
+            </div>
+        {% endif %}
+    </section>
+</div>
 {% endblock %}
