@@ -1,0 +1,143 @@
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    color: #111111;
+    background: #ffffff;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+.site-header {
+    border-bottom: 1px solid #e5e5e5;
+    background: #ffffff;
+}
+
+.site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: min(1200px, calc(100% - 40px));
+    min-height: 72px;
+    margin: 0 auto;
+}
+
+.site-logo {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+}
+
+.site-nav {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.site-nav a {
+    transition: opacity 0.2s ease;
+}
+
+.site-nav a:hover {
+    opacity: 0.6;
+}
+
+.site-nav form {
+    margin: 0;
+}
+
+.site-nav button {
+    padding: 0;
+
+    color: inherit;
+    background: none;
+    border: 0;
+}
+
+.container {
+    width: min(1200px, calc(100% - 40px));
+    margin: 0 auto;
+}
+
+.site-main {
+    padding: 48px 0 80px;
+}
+
+.messages {
+    width: min(1200px, calc(100% - 40px));
+    margin: 20px auto 0;
+}
+
+.message {
+    padding: 14px 18px;
+    border: 1px solid #d9d9d9;
+}
+
+.message + .message {
+    margin-top: 10px;
+}
+
+.message.success {
+    border-color: #8fc99b;
+}
+
+.message.error {
+    border-color: #d88c8c;
+}
+
+.message.warning {
+    border-color: #d8bd75;
+}
+
+@media (max-width: 800px) {
+    .site-header__inner {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 18px;
+
+        padding: 20px 0;
+    }
+
+    .site-nav {
+        flex-wrap: wrap;
+        gap: 14px 18px;
+    }
+
+    .site-main {
+        padding-top: 32px;
+    }
+}

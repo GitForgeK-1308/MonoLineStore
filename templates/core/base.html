@@ -8,53 +8,63 @@
 
     <title>{% block title %}MONO LINE{% endblock %}</title>
 
+    <link
+        rel="stylesheet"
+        href="{% static 'core/css/base.css' %}"
+    >
+
     {% block extra_css %}{% endblock %}
 </head>
 
 <body class="{% block body_class %}{% endblock %}">
-    <header>
-        <a href="{% url 'core:home' %}">
-            MONO LINE
-        </a>
-
-        <nav>
-            <a href="{% url 'products:catalog' %}">
-                Каталог
+    <header class="site-header">
+        <div class="site-header__inner">
+            <a
+                class="site-logo"
+                href="{% url 'core:home' %}"
+            >
+                MONO LINE
             </a>
 
-            <a href="{% url 'cart:cart_detail' %}">
-                Корзина ({{ cart_quantity }})
-            </a>
-
-            {% if user.is_authenticated %}
-                <a href="{% url 'accounts:profile' %}">
-                    Профиль
+            <nav class="site-nav">
+                <a href="{% url 'products:catalog' %}">
+                    Каталог
                 </a>
 
-                <a href="{% url 'orders:my_orders' %}">
-                    Мои заказы
+                <a href="{% url 'cart:cart_detail' %}">
+                    Корзина ({{ cart_quantity }})
                 </a>
 
-                <form
-                    method="post"
-                    action="{% url 'accounts:logout' %}"
-                >
-                    {% csrf_token %}
+                {% if user.is_authenticated %}
+                    <a href="{% url 'accounts:profile' %}">
+                        Профиль
+                    </a>
 
-                    <button type="submit">
-                        Выйти
-                    </button>
-                </form>
-            {% else %}
-                <a href="{% url 'accounts:login' %}">
-                    Войти
-                </a>
+                    <a href="{% url 'orders:my_orders' %}">
+                        Мои заказы
+                    </a>
 
-                <a href="{% url 'accounts:register' %}">
-                    Регистрация
-                </a>
-            {% endif %}
-        </nav>
+                    <form
+                        method="post"
+                        action="{% url 'accounts:logout' %}"
+                    >
+                        {% csrf_token %}
+
+                        <button type="submit">
+                            Выйти
+                        </button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}">
+                        Войти
+                    </a>
+
+                    <a href="{% url 'accounts:register' %}">
+                        Регистрация
+                    </a>
+                {% endif %}
+            </nav>
+        </div>
     </header>
 
     {% if messages %}
@@ -67,8 +77,10 @@
         </div>
     {% endif %}
 
-    <main>
-        {% block content %}{% endblock %}
+    <main class="site-main">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
     </main>
 
     {% block extra_js %}{% endblock %}

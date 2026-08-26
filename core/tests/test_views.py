@@ -224,3 +224,13 @@ class HomeViewTests(TestCase):
             self.regular_product,
             response.context["discount_products"],
         )
+
+    def test_home_includes_base_stylesheet(self):
+        response = self.client.get(
+            reverse("core:home"),
+        )
+
+        self.assertContains(
+            response,
+            "/static/core/css/base.css",
+        )
