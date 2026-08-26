@@ -1,0 +1,26 @@
+<article class="product-card">
+    <a href="{% url 'products:product_detail' product.slug %}">
+        {% if product.image %}
+            <img
+                src="{{ product.image.url }}"
+                alt="{{ product.name }}"
+            >
+        {% endif %}
+
+        <h3>{{ product.name }}</h3>
+    </a>
+
+    {% if product.discount %}
+        <p>
+            <s>{{ product.price }} ₽</s>
+
+            <strong>
+                {{ product.discounted_price }} ₽
+            </strong>
+        </p>
+    {% else %}
+        <strong>
+            {{ product.price }} ₽
+        </strong>
+    {% endif %}
+</article>

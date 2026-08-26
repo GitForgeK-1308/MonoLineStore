@@ -6,10 +6,7 @@
 <h1>Каталог</h1>
 
 {% for product in products %}
-    <article>
-        <h2>{{ product.name }}</h2>
-        <p>{{ product.price }}</p>
-    </article>
+    {% include "products/includes/product_card.html" with product=product only %}
 {% empty %}
     <p>Товары не найдены.</p>
 {% endfor %}
@@ -21,7 +18,9 @@
 {% endif %}
 
 <span>
-    {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+    {{ page_obj.number }}
+    /
+    {{ page_obj.paginator.num_pages }}
 </span>
 
 {% if page_obj.has_next %}
