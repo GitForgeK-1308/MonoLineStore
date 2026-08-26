@@ -1,0 +1,74 @@
+{% extends "core/base.html" %}
+
+{% block title %}MONO LINE{% endblock %}
+
+{% block content %}
+<h1>MONO LINE</h1>
+
+<section>
+    <h2>Популярное</h2>
+
+    {% if popular_products %}
+        {% for product in popular_products %}
+            <article>
+                <h3>
+                    <a href="{% url 'products:product_detail' product.slug %}">
+                        {{ product.name }}
+                    </a>
+                </h3>
+
+                {% if product.image %}
+                    <img
+                        src="{{ product.image.url }}"
+                        alt="{{ product.name }}"
+                    >
+                {% endif %}
+
+                {% if product.discount %}
+                    <p>
+                        <s>{{ product.price }} ₽</s>
+                        <strong>{{ product.discounted_price }} ₽</strong>
+                    </p>
+                {% else %}
+                    <strong>{{ product.price }} ₽</strong>
+                {% endif %}
+            </article>
+        {% endfor %}
+    {% else %}
+        <p>Популярных товаров пока нет.</p>
+    {% endif %}
+</section>
+
+<section>
+    <h2>Новинки</h2>
+
+    {% if new_products %}
+        {% for product in new_products %}
+            <article>
+                <h3>
+                    <a href="{% url 'products:product_detail' product.slug %}">
+                        {{ product.name }}
+                    </a>
+                </h3>
+
+                {% if product.discount %}
+                    <p>
+                        <s>{{ product.price }} ₽</s>
+                        <strong>{{ product.discounted_price }} ₽</strong>
+                    </p>
+                {% else %}
+                    <strong>{{ product.price }} ₽</strong>
+                {% endif %}
+            </article>
+        {% endfor %}
+    {% else %}
+        <p>Товаров пока нет.</p>
+    {% endif %}
+</section>
+
+<p>
+    <a href="{% url 'products:catalog' %}">
+        Смотреть весь каталог
+    </a>
+</p>
+{% endblock %}
