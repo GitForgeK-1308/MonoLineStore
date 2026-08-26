@@ -5,8 +5,9 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from orders.admin import OrderAdmin, OrderItemAdmin
+from orders.admin import OrderAdmin, OrderAdminForm, OrderItemAdmin
 from orders.models import Order, OrderItem
+from orders.services import create_order_from_cart
 from products.models import (
     Category,
     Product,
@@ -161,4 +162,141 @@ class OrderAdminTests(TestCase):
         self.assertIsInstance(
             admin.site._registry[OrderItem],
             OrderItemAdmin,
+        )
+
+    def test_order_admin_form_allows_valid_transition(self):
+        form = OrderAdminForm(
+            data={
+                "status": Order.Status.PROCESSING,
+            },
+            instance=self.order,
+        )
+
+        self.assertTrue(form.is_valid())
+
+    def test_order_admin_form_rejects_invalid_transition(self):
+        form = OrderAdminForm(
+            data={
+                "status": Order.Status.COMPLETED,
+            },
+            instance=self.order,
+        )
+
+        self.assertFalse(form.is_valid())
+
+        self.assertIn(
+            "status",
+            form.errors,
+        )
+
+    def test_order_admin_save_model_changes_status(self):
+        form = OrderAdminForm(
+            data={
+                "status": Order.Status.PROCESSING,
+            },
+            instance=self.order,
+        )
+
+        self.assertTrue(form.is_valid())
+
+        obj = form.save(
+            commit=False,
+        )
+
+        model_admin = admin.site._registry[Order]
+
+        model_admin.save_model(
+            request=None,
+            obj=obj,
+            form=form,
+            change=True,
+        )
+
+        self.order.refresh_from_db()
+
+        self.assertEqual(
+            self.order.status,
+            Order.Status.PROCESSING,
+        )
+
+    def test_cancelling_order_from_admin_restores_stock(self):
+        variant = ProductVariant.objects.create(
+            product=self.order_item.variant.product,
+            color=ProductVariant.Color.WHITE,
+            size=ProductVariant.Size.L,
+            stock=5,
+        )
+
+        order = create_order_from_cart(
+            user=self.customer,
+            cart={
+                str(variant.pk): 2,
+            },
+            order_data={
+                "first_name": "Иван",
+                "phone": "+79990000000",
+                "email": "customer-orders@example.com",
+                "address": "Москва",
+                "comment": "",
+            },
+        )
+
+        variant.refresh_from_db()
+
+        self.assertEqual(
+            variant.stock,
+            3,
+        )
+
+        form = OrderAdminForm(
+            data={
+                "status": Order.Status.CANCELLED,
+            },
+            instance=order,
+        )
+
+        self.assertTrue(form.is_valid())
+
+        obj = form.save(
+            commit=False,
+        )
+
+        model_admin = admin.site._registry[Order]
+
+        model_admin.save_model(
+            request=None,
+            obj=obj,
+            form=form,
+            change=True,
+        )
+
+        variant.refresh_from_db()
+        order.refresh_from_db()
+
+        self.assertEqual(
+            order.status,
+            Order.Status.CANCELLED,
+        )
+        self.assertEqual(
+            variant.stock,
+            5,
+        )
+
+    def test_order_cannot_be_created_from_admin(self):
+        model_admin = admin.site._registry[Order]
+
+        self.assertFalse(
+            model_admin.has_add_permission(
+                None,
+            )
+        )
+
+    def test_order_cannot_be_deleted_from_admin(self):
+        model_admin = admin.site._registry[Order]
+
+        self.assertFalse(
+            model_admin.has_delete_permission(
+                None,
+                self.order,
+            )
         )

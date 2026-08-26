@@ -129,3 +129,58 @@ def create_order_from_cart(
     OrderItem.objects.bulk_create(order_items)
 
     return order
+
+
+@transaction.atomic
+def change_order_status(
+    *,
+    order_id,
+    new_status,
+):
+    order = Order.objects.select_for_update().get(pk=order_id)
+
+    previous_status = order.status
+
+    order.transition_to(new_status)
+
+    if (
+        new_status == Order.Status.CANCELLED
+        and previous_status != Order.Status.CANCELLED
+    ):
+        quantities_by_variant = {}
+
+        order_items = order.items.exclude(
+            variant_id=None,
+        ).values(
+            "variant_id",
+            "quantity",
+        )
+
+        for item in order_items:
+            variant_id = item["variant_id"]
+
+            quantities_by_variant[variant_id] = (
+                quantities_by_variant.get(
+                    variant_id,
+                    0,
+                )
+                + item["quantity"]
+            )
+
+        variants = list(
+            ProductVariant.objects.select_for_update()
+            .filter(
+                pk__in=quantities_by_variant,
+            )
+            .order_by("pk")
+        )
+
+        for variant in variants:
+            variant.stock += quantities_by_variant[variant.pk]
+
+        ProductVariant.objects.bulk_update(
+            variants,
+            ["stock"],
+        )
+
+    return order

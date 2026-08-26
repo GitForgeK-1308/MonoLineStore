@@ -1,6 +1,36 @@
+from django import forms
 from django.contrib import admin
+from django.core.exceptions import ValidationError
 
 from .models import Order, OrderItem
+from .services import change_order_status
+
+
+class OrderAdminForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ("status",)
+
+    def clean_status(self):
+        new_status = self.cleaned_data["status"]
+
+        if self.instance.pk is None:
+            return new_status
+
+        current_order = Order.objects.only(
+            "status",
+        ).get(
+            pk=self.instance.pk,
+        )
+
+        if not current_order.can_transition_to(new_status):
+            raise ValidationError(
+                "Нельзя изменить статус "
+                f"с «{current_order.get_status_display()}» "
+                f"на «{Order.Status(new_status).label}»."
+            )
+
+        return new_status
 
 
 class OrderItemInline(admin.TabularInline):
@@ -28,12 +58,18 @@ class OrderItemInline(admin.TabularInline):
 
         return obj.total_price
 
-    def has_add_permission(self, request, obj=None):
+    def has_add_permission(
+        self,
+        request,
+        obj=None,
+    ):
         return False
 
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
+    form = OrderAdminForm
+
     list_display = (
         "id",
         "first_name",
@@ -74,6 +110,42 @@ class OrderAdmin(admin.ModelAdmin):
     )
 
     inlines = (OrderItemInline,)
+
+    def save_model(
+        self,
+        request,
+        obj,
+        form,
+        change,
+    ):
+        if not change:
+            super().save_model(
+                request,
+                obj,
+                form,
+                change,
+            )
+            return
+
+        change_order_status(
+            order_id=obj.pk,
+            new_status=form.cleaned_data["status"],
+        )
+
+        obj.refresh_from_db()
+
+    def has_add_permission(
+        self,
+        request,
+    ):
+        return False
+
+    def has_delete_permission(
+        self,
+        request,
+        obj=None,
+    ):
+        return False
 
 
 @admin.register(OrderItem)
@@ -116,8 +188,15 @@ class OrderItemAdmin(admin.ModelAdmin):
     def item_total(self, obj):
         return obj.total_price
 
-    def has_add_permission(self, request):
+    def has_add_permission(
+        self,
+        request,
+    ):
         return False
 
-    def has_delete_permission(self, request, obj=None):
+    def has_delete_permission(
+        self,
+        request,
+        obj=None,
+    ):
         return False

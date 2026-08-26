@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 
@@ -11,6 +12,19 @@ class Order(models.Model):
         PROCESSING = "processing", "В обработке"
         COMPLETED = "completed", "Завершён"
         CANCELLED = "cancelled", "Отменён"
+
+    ALLOWED_STATUS_TRANSITIONS = {
+        Status.NEW: {
+            Status.PROCESSING,
+            Status.CANCELLED,
+        },
+        Status.PROCESSING: {
+            Status.COMPLETED,
+            Status.CANCELLED,
+        },
+        Status.COMPLETED: set(),
+        Status.CANCELLED: set(),
+    }
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -86,6 +100,45 @@ class Order(models.Model):
                 name="order_total_price_gte_000",
             ),
         ]
+
+    def can_transition_to(self, new_status):
+        if new_status == self.status:
+            return True
+
+        return new_status in self.ALLOWED_STATUS_TRANSITIONS.get(
+            self.status,
+            set(),
+        )
+
+    def transition_to(self, new_status):
+        if new_status not in self.Status.values:
+            raise ValidationError(
+                {
+                    "status": "Неизвестный статус заказа.",
+                }
+            )
+
+        if not self.can_transition_to(new_status):
+            raise ValidationError(
+                {
+                    "status": (
+                        f"Нельзя изменить статус "
+                        f"с «{self.get_status_display()}» "
+                        f"на «{self.Status(new_status).label}»."
+                    ),
+                }
+            )
+
+        if new_status == self.status:
+            return
+
+        self.status = new_status
+        self.save(
+            update_fields=(
+                "status",
+                "updated_at",
+            )
+        )
 
     def __str__(self):
         return f"Заказ №{self.pk}"
