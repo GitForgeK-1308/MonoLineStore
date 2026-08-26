@@ -1,16 +1,56 @@
 {% extends "core/base.html" %}
+{% load static %}
 
 {% block title %}MONO LINE{% endblock %}
 
+{% block extra_css %}
+    <link
+        rel="stylesheet"
+        href="{% static 'core/css/home.css' %}"
+    >
+    <link
+        rel="stylesheet"
+        href="{% static 'products/css/product_card.css' %}"
+    >
+{% endblock %}
+
 {% block content %}
-<h1>MONO LINE</h1>
-<section>
-    <h2>Категории</h2>
+<section class="home-hero">
+    <div class="home-hero__content">
+        <p class="home-hero__eyebrow">
+            New collection
+        </p>
+
+        <h1 class="home-hero__title">
+            MONO<br>LINE
+        </h1>
+
+        <p class="home-hero__text">
+            Минималистичная одежда на каждый день.
+            Простые формы, спокойные цвета и ничего лишнего.
+        </p>
+
+        <a
+            class="home-hero__button"
+            href="{% url 'products:catalog' %}"
+        >
+            Смотреть коллекцию
+        </a>
+    </div>
+</section>
+
+<section class="home-section">
+    <div class="home-section__header">
+        <h2 class="home-section__title">
+            Категории
+        </h2>
+    </div>
 
     {% if categories %}
-        <nav>
+        <nav class="category-list">
             {% for category in categories %}
                 <a
+                    class="category-list__item"
                     href="{% url 'products:catalog' category.slug %}"
                 >
                     {{ category.name }}
@@ -18,46 +58,90 @@
             {% endfor %}
         </nav>
     {% else %}
-        <p>Категории пока не добавлены.</p>
+        <p class="home-empty">
+            Категории пока не добавлены.
+        </p>
     {% endif %}
 </section>
-<section>
-    <h2>Популярное</h2>
+
+<section class="home-section">
+    <div class="home-section__header">
+        <h2 class="home-section__title">
+            Популярное
+        </h2>
+
+        <a
+            class="home-section__link"
+            href="{% url 'products:catalog' %}?is_popular=1"
+        >
+            Смотреть все
+        </a>
+    </div>
 
     {% if popular_products %}
-        {% for product in popular_products %}
-            {% include "products/includes/product_card.html" with product=product only %}
-        {% endfor %}
+        <div class="product-grid">
+            {% for product in popular_products %}
+                {% include "products/includes/product_card.html" with product=product only %}
+            {% endfor %}
+        </div>
     {% else %}
-        <p>Популярных товаров пока нет.</p>
+        <p class="home-empty">
+            Популярных товаров пока нет.
+        </p>
     {% endif %}
 </section>
 
-<section>
-    <h2>Новинки</h2>
+<section class="home-section">
+    <div class="home-section__header">
+        <h2 class="home-section__title">
+            Новинки
+        </h2>
+
+        <a
+            class="home-section__link"
+            href="{% url 'products:catalog' %}"
+        >
+            Смотреть все
+        </a>
+    </div>
 
     {% if new_products %}
-        {% for product in new_products %}
-            {% include "products/includes/product_card.html" with product=product only %}
-        {% endfor %}
+        <div class="product-grid">
+            {% for product in new_products %}
+                {% include "products/includes/product_card.html" with product=product only %}
+            {% endfor %}
+        </div>
     {% else %}
-        <p>Товаров пока нет.</p>
+        <p class="home-empty">
+            Товаров пока нет.
+        </p>
     {% endif %}
 </section>
-<section>
-    <h2>Скидки</h2>
+
+<section class="home-section">
+    <div class="home-section__header">
+        <h2 class="home-section__title">
+            Скидки
+        </h2>
+
+        <a
+            class="home-section__link"
+            href="{% url 'products:catalog' %}?discount=1"
+        >
+            Смотреть все
+        </a>
+    </div>
 
     {% if discount_products %}
-        {% for product in discount_products %}
-            {% include "products/includes/product_card.html" with product=product only %}
-        {% endfor %}
+        <div class="product-grid">
+            {% for product in discount_products %}
+                {% include "products/includes/product_card.html" with product=product only %}
+            {% endfor %}
+        </div>
     {% else %}
-        <p>Товаров со скидкой пока нет.</p>
+        <p class="home-empty">
+            Товаров со скидкой пока нет.
+        </p>
     {% endif %}
 </section>
-<p>
-    <a href="{% url 'products:catalog' %}">
-        Смотреть весь каталог
-    </a>
-</p>
 {% endblock %}

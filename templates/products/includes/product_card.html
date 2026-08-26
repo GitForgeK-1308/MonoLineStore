@@ -1,26 +1,47 @@
 <article class="product-card">
-    <a href="{% url 'products:product_detail' product.slug %}">
-        {% if product.image %}
-            <img
-                src="{{ product.image.url }}"
-                alt="{{ product.name }}"
-            >
-        {% endif %}
+    <a
+        class="product-card__link"
+        href="{% url 'products:product_detail' product.slug %}"
+    >
+        <div class="product-card__image-wrapper">
+            {% if product.image %}
+                <img
+                    class="product-card__image"
+                    src="{{ product.image.url }}"
+                    alt="{{ product.name }}"
+                    loading="lazy"
+                >
+            {% else %}
+                <div class="product-card__placeholder">
+                    Нет фото
+                </div>
+            {% endif %}
 
-        <h3>{{ product.name }}</h3>
+            {% if product.discount %}
+                <span class="product-card__discount">
+                    −{{ product.discount }}%
+                </span>
+            {% endif %}
+        </div>
+
+        <h3 class="product-card__title">
+            {{ product.name }}
+        </h3>
     </a>
 
-    {% if product.discount %}
-        <p>
-            <s>{{ product.price }} ₽</s>
-
-            <strong>
+    <p class="product-card__price">
+        {% if product.discount %}
+            <strong class="product-card__price-current">
                 {{ product.discounted_price }} ₽
             </strong>
-        </p>
-    {% else %}
-        <strong>
-            {{ product.price }} ₽
-        </strong>
-    {% endif %}
+
+            <s class="product-card__price-old">
+                {{ product.price }} ₽
+            </s>
+        {% else %}
+            <strong class="product-card__price-current">
+                {{ product.price }} ₽
+            </strong>
+        {% endif %}
+    </p>
 </article>

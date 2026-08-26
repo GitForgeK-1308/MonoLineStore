@@ -234,3 +234,43 @@ class HomeViewTests(TestCase):
             response,
             "/static/core/css/base.css",
         )
+
+    def test_home_includes_home_stylesheet(self):
+        response = self.client.get(
+            reverse("core:home"),
+        )
+
+        self.assertContains(
+            response,
+            "/static/core/css/home.css",
+        )
+
+    def test_home_includes_product_card_stylesheet(self):
+        response = self.client.get(
+            reverse("core:home"),
+        )
+
+        self.assertContains(
+            response,
+            "/static/products/css/product_card.css",
+        )
+
+    def test_home_popular_link_uses_catalog_filter(self):
+        response = self.client.get(
+            reverse("core:home"),
+        )
+
+        self.assertContains(
+            response,
+            f"{reverse('products:catalog')}?is_popular=1",
+        )
+
+    def test_home_discount_link_uses_catalog_filter(self):
+        response = self.client.get(
+            reverse("core:home"),
+        )
+
+        self.assertContains(
+            response,
+            f"{reverse('products:catalog')}?discount=1",
+        )
