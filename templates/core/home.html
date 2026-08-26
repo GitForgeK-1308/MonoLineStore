@@ -4,7 +4,23 @@
 
 {% block content %}
 <h1>MONO LINE</h1>
+<section>
+    <h2>Категории</h2>
 
+    {% if categories %}
+        <nav>
+            {% for category in categories %}
+                <a
+                    href="{% url 'products:catalog' category.slug %}"
+                >
+                    {{ category.name }}
+                </a>
+            {% endfor %}
+        </nav>
+    {% else %}
+        <p>Категории пока не добавлены.</p>
+    {% endif %}
+</section>
 <section>
     <h2>Популярное</h2>
 
@@ -28,7 +44,17 @@
         <p>Товаров пока нет.</p>
     {% endif %}
 </section>
+<section>
+    <h2>Скидки</h2>
 
+    {% if discount_products %}
+        {% for product in discount_products %}
+            {% include "products/includes/product_card.html" with product=product only %}
+        {% endfor %}
+    {% else %}
+        <p>Товаров со скидкой пока нет.</p>
+    {% endif %}
+</section>
 <p>
     <a href="{% url 'products:catalog' %}">
         Смотреть весь каталог

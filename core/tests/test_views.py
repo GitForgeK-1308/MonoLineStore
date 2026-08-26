@@ -32,6 +32,14 @@ class HomeViewTests(TestCase):
             price=Decimal("2000.00"),
         )
 
+        cls.discounted_product = Product.objects.create(
+            category=cls.category,
+            name="Discount Hoodie",
+            slug="discount-hoodie",
+            price=Decimal("6000.00"),
+            discount=20,
+        )
+
     def test_home_page_is_available(self):
         response = self.client.get(
             reverse("core:home"),
@@ -88,8 +96,8 @@ class HomeViewTests(TestCase):
             new_products,
         )
 
-    def test_home_page_uses_two_product_queries(self):
-        with self.assertNumQueries(2):
+    def test_home_page_uses_three_queries(self):
+        with self.assertNumQueries(4):
             response = self.client.get(
                 reverse("core:home"),
             )
@@ -170,4 +178,49 @@ class HomeViewTests(TestCase):
         self.assertNotContains(
             response,
             reverse("accounts:register"),
+        )
+
+    def test_home_contains_categories(self):
+        response = self.client.get(
+            reverse("core:home"),
+        )
+
+        self.assertIn(
+            self.category,
+            response.context["categories"],
+        )
+
+    def test_home_contains_category_catalog_link(self):
+        response = self.client.get(
+            reverse("core:home"),
+        )
+
+        self.assertContains(
+            response,
+            reverse(
+                "products:catalog",
+                kwargs={
+                    "category_slug": self.category.slug,
+                },
+            ),
+        )
+
+    def test_home_contains_discounted_products(self):
+        response = self.client.get(
+            reverse("core:home"),
+        )
+
+        self.assertIn(
+            self.discounted_product,
+            response.context["discount_products"],
+        )
+
+    def test_home_discount_products_exclude_products_without_discount(self):
+        response = self.client.get(
+            reverse("core:home"),
+        )
+
+        self.assertNotIn(
+            self.regular_product,
+            response.context["discount_products"],
         )
