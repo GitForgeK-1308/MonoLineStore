@@ -1,9 +1,14 @@
 from decimal import Decimal, InvalidOperation
 
 from django.http import Http404
-from django.views.generic import ListView
+from django.views.generic import DetailView, ListView
 
+from .forms import AddToCartForm
 from .models import Category, Gender, Product, ProductType
+from .recently_viewed import (
+    add_viewed_product,
+    get_viewed_products,
+)
 from .search import search_products
 
 
@@ -167,6 +172,70 @@ class ProductCatalogView(ListView):
                 ),
                 "ordering": self.request.GET.get("ordering"),
                 "query_params": query_params.urlencode(),
+            }
+        )
+
+        return context
+
+
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = "products/product_detail.html"
+    context_object_name = "product"
+    slug_field = "slug"
+    slug_url_kwarg = "product_slug"
+
+    def get_queryset(self):
+        return Product.objects.select_related(
+            "category",
+            "product_type",
+            "gender",
+        ).prefetch_related(
+            "variants",
+            "images",
+        )
+
+    def get_related_products(self):
+        return (
+            Product.objects.select_related(
+                "category",
+                "product_type",
+                "gender",
+            )
+            .filter(category=self.object.category)
+            .exclude(pk=self.object.pk)
+            .order_by("-created_at")[:4]
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        product = self.object
+
+        form = AddToCartForm(
+            product=product,
+        )
+
+        viewed_products = get_viewed_products(
+            self.request,
+            exclude_product_id=product.pk,
+        )
+
+        add_viewed_product(
+            self.request,
+            product.pk,
+        )
+
+        context.update(
+            {
+                "form": form,
+                "available_colors": form.available_colors,
+                "available_sizes": form.available_sizes,
+                "has_stock": product.variants.filter(
+                    stock__gt=0,
+                ).exists(),
+                "viewed_products": viewed_products,
+                "related_products": self.get_related_products(),
             }
         )
 

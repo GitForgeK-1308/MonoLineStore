@@ -1,0 +1,71 @@
+{% extends "core/base.html" %}
+
+{% block title %}{{ product.name }} | MONO LINE{% endblock %}
+
+{% block content %}
+<section>
+    <a href="{% url 'products:catalog' %}">
+        ← Вернуться в каталог
+    </a>
+
+    <h1>{{ product.name }}</h1>
+
+    <p>{{ product.category.name }}</p>
+
+    {% if product.description %}
+        <p>{{ product.description }}</p>
+    {% endif %}
+
+    {% if product.discount %}
+        <p>
+            <del>{{ product.price }} ₽</del>
+            <strong>{{ product.discounted_price }} ₽</strong>
+        </p>
+    {% else %}
+        <p>{{ product.price }} ₽</p>
+    {% endif %}
+
+    {% if has_stock %}
+        <p>В наличии</p>
+    {% else %}
+        <p>Нет в наличии</p>
+    {% endif %}
+
+    {% if form.color.field.choices %}
+        <h2>Варианты</h2>
+
+        <p>{{ form.color.label }}</p>
+        {{ form.color }}
+
+        <p>{{ form.size.label }}</p>
+        {{ form.size }}
+
+        <p>{{ form.quantity.label }}</p>
+        {{ form.quantity }}
+    {% endif %}
+</section>
+
+{% if viewed_products %}
+<section>
+    <h2>Недавно смотрели</h2>
+
+    {% for viewed_product in viewed_products %}
+        <a href="{% url 'products:product_detail' viewed_product.slug %}">
+            {{ viewed_product.name }}
+        </a>
+    {% endfor %}
+</section>
+{% endif %}
+
+<section>
+    <h2>Другие товары</h2>
+
+    {% for related_product in related_products %}
+        <a href="{% url 'products:product_detail' related_product.slug %}">
+            {{ related_product.name }}
+        </a>
+    {% empty %}
+        <p>Других товаров пока нет.</p>
+    {% endfor %}
+</section>
+{% endblock %}

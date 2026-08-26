@@ -307,3 +307,214 @@ class ProductCatalogViewTests(TestCase):
             response.context["paginator"].per_page,
             9,
         )
+
+
+class ProductDetailViewTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.category = Category.objects.create(
+            name="Одежда",
+            slug="clothes-detail",
+        )
+
+        cls.other_category = Category.objects.create(
+            name="Обувь",
+            slug="shoes-detail",
+        )
+
+        cls.product = Product.objects.create(
+            category=cls.category,
+            name="MONO Hoodie Detail",
+            slug="mono-hoodie-detail",
+            description="Черное худи",
+            price=Decimal("4990.00"),
+        )
+
+        ProductVariant.objects.create(
+            product=cls.product,
+            color=ProductVariant.Color.BLACK,
+            size=ProductVariant.Size.M,
+            stock=5,
+        )
+
+        cls.out_of_stock_product = Product.objects.create(
+            category=cls.category,
+            name="Empty T-Shirt",
+            slug="empty-t-shirt",
+            price=Decimal("1990.00"),
+        )
+
+        ProductVariant.objects.create(
+            product=cls.out_of_stock_product,
+            color=ProductVariant.Color.WHITE,
+            size=ProductVariant.Size.M,
+            stock=0,
+        )
+
+        cls.related_products = [
+            Product.objects.create(
+                category=cls.category,
+                name=f"Related Product {number}",
+                slug=f"related-product-{number}",
+                price=Decimal("2500.00"),
+            )
+            for number in range(5)
+        ]
+
+        cls.unrelated_product = Product.objects.create(
+            category=cls.other_category,
+            name="Unrelated Sneakers",
+            slug="unrelated-sneakers",
+            price=Decimal("7000.00"),
+        )
+
+    def test_product_detail_page_is_available(self):
+        response = self.client.get(
+            reverse(
+                "products:product_detail",
+                kwargs={
+                    "product_slug": self.product.slug,
+                },
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            "products/product_detail.html",
+        )
+        self.assertEqual(
+            response.context["product"],
+            self.product,
+        )
+
+    def test_unknown_product_returns_404(self):
+        response = self.client.get(
+            reverse(
+                "products:product_detail",
+                kwargs={
+                    "product_slug": "unknown-product",
+                },
+            )
+        )
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_detail_contains_add_to_cart_form(self):
+        response = self.client.get(
+            reverse(
+                "products:product_detail",
+                kwargs={
+                    "product_slug": self.product.slug,
+                },
+            )
+        )
+
+        form = response.context["form"]
+
+        self.assertEqual(
+            form.product,
+            self.product,
+        )
+
+    def test_product_with_stock_has_stock(self):
+        response = self.client.get(
+            reverse(
+                "products:product_detail",
+                kwargs={
+                    "product_slug": self.product.slug,
+                },
+            )
+        )
+
+        self.assertTrue(
+            response.context["has_stock"],
+        )
+
+    def test_product_without_stock_has_no_stock(self):
+        response = self.client.get(
+            reverse(
+                "products:product_detail",
+                kwargs={
+                    "product_slug": self.out_of_stock_product.slug,
+                },
+            )
+        )
+
+        self.assertFalse(
+            response.context["has_stock"],
+        )
+
+    def test_opened_product_is_saved_to_recently_viewed(self):
+        self.client.get(
+            reverse(
+                "products:product_detail",
+                kwargs={
+                    "product_slug": self.product.slug,
+                },
+            )
+        )
+
+        session = self.client.session
+
+        self.assertEqual(
+            session["viewed_products"][0],
+            self.product.pk,
+        )
+
+    def test_previous_product_appears_in_recently_viewed(self):
+        first_product = self.related_products[0]
+
+        self.client.get(
+            reverse(
+                "products:product_detail",
+                kwargs={
+                    "product_slug": first_product.slug,
+                },
+            )
+        )
+
+        response = self.client.get(
+            reverse(
+                "products:product_detail",
+                kwargs={
+                    "product_slug": self.product.slug,
+                },
+            )
+        )
+
+        viewed_products = response.context["viewed_products"]
+
+        self.assertIn(
+            first_product,
+            viewed_products,
+        )
+        self.assertNotIn(
+            self.product,
+            viewed_products,
+        )
+
+    def test_related_products_are_from_same_category(self):
+        response = self.client.get(
+            reverse(
+                "products:product_detail",
+                kwargs={
+                    "product_slug": self.product.slug,
+                },
+            )
+        )
+
+        related_products = list(response.context["related_products"])
+
+        self.assertNotIn(
+            self.product,
+            related_products,
+        )
+        self.assertNotIn(
+            self.unrelated_product,
+            related_products,
+        )
+        self.assertEqual(
+            len(related_products),
+            4,
+        )
