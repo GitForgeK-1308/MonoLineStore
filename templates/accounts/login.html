@@ -1,0 +1,68 @@
+{% extends "core/base.html" %}
+
+{% block title %}Вход | MONO LINE{% endblock %}
+{% block body_class %}login-page{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="container">
+        <div class="auth-card">
+            <div class="auth-head">
+                <h1>Вход в аккаунт</h1>
+                <p>
+                    Введите email и пароль,
+                    чтобы перейти в личный кабинет.
+                </p>
+            </div>
+
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="form-alert">
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% for field in form %}
+                    <div class="form-group">
+                        <label
+                            for="{{ field.id_for_label }}"
+                            class="form-label"
+                        >
+                            {{ field.label }}
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.errors %}
+                            <div class="form-errors">
+                                {% for error in field.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-dark auth-btn">
+                    Войти
+                </button>
+            </form>
+
+            <div class="auth-bottom">
+                <p>Нет аккаунта?</p>
+
+                <a
+                    href="{% url 'accounts:register' %}"
+                    class="auth-link"
+                >
+                    Создать аккаунт
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
