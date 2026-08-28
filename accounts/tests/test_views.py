@@ -65,6 +65,16 @@ class UserRegisterViewTests(TestCase):
             reverse("accounts:profile"),
         )
 
+    def test_register_includes_stylesheet(self):
+        response = self.client.get(
+            reverse("accounts:register"),
+        )
+
+        self.assertContains(
+            response,
+            "/static/accounts/css/accounts.css",
+        )
+
 
 class UserProfileViewTests(TestCase):
     def setUp(self):
@@ -96,6 +106,18 @@ class UserProfileViewTests(TestCase):
         self.assertTemplateUsed(
             response,
             "accounts/profile.html",
+        )
+
+    def test_profile_includes_stylesheet(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("accounts:profile"),
+        )
+
+        self.assertContains(
+            response,
+            "/static/accounts/css/accounts.css",
         )
 
 
@@ -151,6 +173,16 @@ class UserLoginViewTests(TestCase):
         self.assertNotIn(
             "_auth_user_id",
             self.client.session,
+        )
+
+    def test_login_includes_stylesheet(self):
+        response = self.client.get(
+            reverse("accounts:login"),
+        )
+
+        self.assertContains(
+            response,
+            "/static/accounts/css/accounts.css",
         )
 
 

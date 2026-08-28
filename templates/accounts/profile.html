@@ -1,86 +1,104 @@
 {% extends "core/base.html" %}
+{% load static %}
 
 {% block title %}Профиль | MONO LINE{% endblock %}
 {% block body_class %}profile-page{% endblock %}
 
+{% block extra_css %}
+    <link
+        rel="stylesheet"
+        href="{% static 'accounts/css/accounts.css' %}"
+    >
+{% endblock %}
+
 {% block content %}
-<section class="profile-section">
-    <div class="container">
-        <div class="profile-card">
-            <div class="profile-head">
-                <h1>Личный кабинет</h1>
-                <p>
-                    Здесь находится основная информация
-                    о вашем аккаунте.
-                </p>
+<section class="account-layout">
+    <div class="profile-card">
+        <header class="profile-head">
+            <h1>
+                Личный кабинет
+            </h1>
+
+            <p>
+                Управляйте аккаунтом
+                и просматривайте историю покупок.
+            </p>
+        </header>
+
+        <div class="profile-info">
+            <div class="profile-row">
+                <span class="profile-label">
+                    Email
+                </span>
+
+                <span class="profile-value">
+                    {{ user.email }}
+                </span>
             </div>
 
-            <div class="profile-info">
-                <div class="profile-row">
-                    <span class="profile-label">Email</span>
-                    <span class="profile-value">
-                        {{ user.email }}
-                    </span>
-                </div>
+            <div class="profile-row">
+                <span class="profile-label">
+                    Дата регистрации
+                </span>
 
-                <div class="profile-row">
-                    <span class="profile-label">
-                        Дата регистрации
-                    </span>
-
-                    <span class="profile-value">
-                        {{ user.date_joined|date:"d.m.Y" }}
-                    </span>
-                </div>
-
-                <div class="profile-row">
-                    <span class="profile-label">Статус</span>
-                    <span class="profile-value">Авторизован</span>
-                </div>
+                <span class="profile-value">
+                    {{ user.date_joined|date:"d.m.Y" }}
+                </span>
             </div>
 
-            <div class="profile-menu">
-                {% url "orders:my_orders" as orders_url %}
+            <div class="profile-row">
+                <span class="profile-label">
+                    Статус
+                </span>
 
-                {% if orders_url %}
-                    <a
-                        href="{{ orders_url }}"
-                        class="profile-menu-link"
-                    >
-                        <span>Мои заказы</span>
-                        <small>
-                            История покупок и подробности заказов
-                        </small>
-                    </a>
-                {% endif %}
-
-                {% url "products:catalog" as catalog_url %}
-
-                {% if catalog_url %}
-                    <a
-                        href="{{ catalog_url }}"
-                        class="profile-menu-link"
-                    >
-                        <span>Каталог</span>
-                        <small>
-                            Перейти к товарам MONO LINE
-                        </small>
-                    </a>
-                {% endif %}
+                <span class="profile-value">
+                    Авторизован
+                </span>
             </div>
+        </div>
 
-            <div class="profile-actions">
-                <form
-                    method="post"
-                    action="{% url 'accounts:logout' %}"
+        <nav class="profile-menu">
+            <a
+                class="profile-menu-link"
+                href="{% url 'orders:my_orders' %}"
+            >
+                <span>
+                    Мои заказы
+                </span>
+
+                <small>
+                    История покупок и подробности заказов
+                </small>
+            </a>
+
+            <a
+                class="profile-menu-link"
+                href="{% url 'products:catalog' %}"
+            >
+                <span>
+                    Каталог
+                </span>
+
+                <small>
+                    Перейти к товарам MONO LINE
+                </small>
+            </a>
+        </nav>
+
+        <div class="profile-actions">
+            <form
+                method="post"
+                action="{% url 'accounts:logout' %}"
+            >
+                {% csrf_token %}
+
+                <button
+                    class="profile-logout"
+                    type="submit"
                 >
-                    {% csrf_token %}
-
-                    <button type="submit" class="btn btn-dark">
-                        Выйти из аккаунта
-                    </button>
-                </form>
-            </div>
+                    Выйти из аккаунта
+                </button>
+            </form>
         </div>
     </div>
 </section>
