@@ -3,6 +3,7 @@ from decimal import Decimal, InvalidOperation
 from django.http import Http404
 from django.views.generic import DetailView, ListView
 
+from .cache import get_cached_categories
 from .forms import AddToCartForm
 from .models import Category, Gender, Product, ProductType
 from .recently_viewed import (
@@ -148,7 +149,7 @@ class ProductCatalogView(ListView):
 
         context.update(
             {
-                "categories": Category.objects.all(),
+                "categories": get_cached_categories(),
                 "product_types": self.get_product_types(),
                 "genders": Gender.objects.all(),
                 "current_category": self.current_category,
