@@ -36,7 +36,27 @@ ALLOWED_HOSTS = env.list(
     default=["localhost", "127.0.0.1"],
 )
 
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
 
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+    SECURE_HSTS_SECONDS = env.int(
+        "DJANGO_SECURE_HSTS_SECONDS",
+        default=3600,
+    )
+
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool(
+        "DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS",
+        default=False,
+    )
+
+    SECURE_HSTS_PRELOAD = env.bool(
+        "DJANGO_SECURE_HSTS_PRELOAD",
+        default=False,
+    )
+    
 # Application definition
 
 INSTALLED_APPS = [
@@ -140,11 +160,49 @@ STATIC_URL = "static/"
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
-MAILERS = {
-    "default": {
-        "BACKEND": "django.core.mail.backends.console.EmailBackend",
-    },
-}
+if DEBUG:
+    MAILERS = {
+        "default": {
+            "BACKEND": "django.core.mail.backends.console.EmailBackend",
+        },
+    }
+else:
+    MAILERS = {
+        "default": {
+            "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+            "OPTIONS": {
+                "host": env(
+                    "EMAIL_HOST",
+                    default="localhost",
+                ),
+                "port": env.int(
+                    "EMAIL_PORT",
+                    default=587,
+                ),
+                "username": env(
+                    "EMAIL_HOST_USER",
+                    default="",
+                ),
+                "password": env(
+                    "EMAIL_HOST_PASSWORD",
+                    default="",
+                ),
+                "use_tls": env.bool(
+                    "EMAIL_USE_TLS",
+                    default=True,
+                ),
+                "timeout": env.int(
+                    "EMAIL_TIMEOUT",
+                    default=10,
+                ),
+            },
+        },
+    }
+
+DEFAULT_FROM_EMAIL = env(
+    "DEFAULT_FROM_EMAIL",
+    default="MONO LINE <noreply@example.com>",
+)
 
 
 AUTH_USER_MODEL = "accounts.CustomUser"
