@@ -83,5 +83,8 @@ jobs:
       - name: Django system check
         run: uv run python manage.py check
 
+      - name: Collect static files
+        run: uv run python manage.py collectstatic --noinput
+
       - name: Run tests
         run: uv run python manage.py test
