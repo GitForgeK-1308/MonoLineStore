@@ -36,26 +36,45 @@ ALLOWED_HOSTS = env.list(
     default=["localhost", "127.0.0.1"],
 )
 
-if not DEBUG:
-    SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = (
+    "HTTP_X_FORWARDED_PROTO",
+    "https",
+)
 
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = env.bool(
+    "DJANGO_SECURE_SSL_REDIRECT",
+    default=False,
+)
 
-    SECURE_HSTS_SECONDS = env.int(
-        "DJANGO_SECURE_HSTS_SECONDS",
-        default=3600,
-    )
+SESSION_COOKIE_SECURE = env.bool(
+    "DJANGO_SESSION_COOKIE_SECURE",
+    default=False,
+)
 
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool(
-        "DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS",
-        default=False,
-    )
+CSRF_COOKIE_SECURE = env.bool(
+    "DJANGO_CSRF_COOKIE_SECURE",
+    default=False,
+)
 
-    SECURE_HSTS_PRELOAD = env.bool(
-        "DJANGO_SECURE_HSTS_PRELOAD",
-        default=False,
-    )
+CSRF_TRUSTED_ORIGINS = env.list(
+    "DJANGO_CSRF_TRUSTED_ORIGINS",
+    default=[],
+)
+
+SECURE_HSTS_SECONDS = env.int(
+    "DJANGO_SECURE_HSTS_SECONDS",
+    default=0,
+)
+
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool(
+    "DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS",
+    default=False,
+)
+
+SECURE_HSTS_PRELOAD = env.bool(
+    "DJANGO_SECURE_HSTS_PRELOAD",
+    default=False,
+)
 
 # Application definition
 

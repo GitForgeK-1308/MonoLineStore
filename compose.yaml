@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:17-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -19,6 +20,7 @@ services:
 
   redis:
     image: redis:8-alpine
+    restart: unless-stopped
     volumes:
       - redis_data:/data
     healthcheck:
@@ -33,6 +35,7 @@ services:
   migrate:
     build: .
     image: monoline-web
+    restart: "no"
     env_file:
       - .env
     environment:
@@ -55,6 +58,7 @@ services:
   web:
     build: .
     image: monoline-web
+    restart: unless-stopped
     env_file:
       - .env
     environment:
@@ -74,6 +78,16 @@ services:
     volumes:
       - media_data:/app/media
       - static_data:/app/staticfiles
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/', timeout=5)\"",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -83,6 +97,7 @@ services:
   celery:
     build: .
     image: monoline-web
+    restart: unless-stopped
     env_file:
       - .env
     environment:
@@ -105,6 +120,7 @@ services:
 
   nginx:
     image: nginx:1.29-alpine
+    restart: unless-stopped
     ports:
       - "80:80"
     volumes:
@@ -112,7 +128,8 @@ services:
       - static_data:/app/staticfiles:ro
       - media_data:/app/media:ro
     depends_on:
-      - web
+      web:
+        condition: service_healthy
 
 volumes:
   postgres_data:
