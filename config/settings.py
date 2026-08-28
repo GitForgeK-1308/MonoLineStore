@@ -67,7 +67,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "accounts",
-    "products",
+    "products.apps.ProductsConfig",
     "cart",
     "orders",
     "core",
@@ -258,3 +258,18 @@ CELERY_BROKER_URL = env(
 
 CELERY_TASK_SERIALIZER = "json"
 CELERY_ACCEPT_CONTENT = ["json"]
+
+# Cache
+
+REDIS_CACHE_URL = env(
+    "REDIS_CACHE_URL",
+    default="redis://localhost:6379/1",
+)
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": REDIS_CACHE_URL,
+        "TIMEOUT": 300,
+    }
+}
