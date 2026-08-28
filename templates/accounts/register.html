@@ -50,7 +50,9 @@
 
                     {{ field }}
 
-                    {% if field.help_text %}
+                    {% if field.name == "password1" %}
+                        {% include "accounts/includes/password_requirements.html" with password_mode="register" password_input_id=field.id_for_label email_input_id="id_email" %}
+                    {% elif field.help_text %}
                         <div class="form-help">
                             {{ field.help_text|safe }}
                         </div>
@@ -88,4 +90,11 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+    <script
+        src="{% static 'accounts/js/password-validator.js' %}"
+        defer
+    ></script>
 {% endblock %}
