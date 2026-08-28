@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError, transaction
+from django.db.models.deletion import ProtectedError
 from django.test import TestCase
 
 from orders.models import Order, OrderItem
@@ -197,17 +198,23 @@ class OrderItemModelTests(TestCase):
             Decimal("4500.00"),
         )
 
-    def test_deleting_variant_keeps_order_item(self):
+    def test_variant_used_in_order_cannot_be_deleted(self):
         item = self.create_order_item()
 
-        self.variant.delete()
+        with self.assertRaises(ProtectedError):
+            self.variant.delete()
+
+        self.assertTrue(
+            ProductVariant.objects.filter(
+                pk=self.variant.pk,
+            ).exists()
+        )
 
         item.refresh_from_db()
 
-        self.assertIsNone(item.variant)
         self.assertEqual(
-            item.product_name,
-            "MONO Hoodie",
+            item.variant,
+            self.variant,
         )
 
     def test_deleting_order_deletes_items(self):

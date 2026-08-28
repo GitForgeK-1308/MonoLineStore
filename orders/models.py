@@ -154,7 +154,7 @@ class OrderItem(models.Model):
 
     variant = models.ForeignKey(
         "products.ProductVariant",
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
         related_name="order_items",
