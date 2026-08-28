@@ -1,0 +1,46 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Страница не найдена | MONO LINE{% endblock %}
+
+{% block extra_css %}
+    <link
+        rel="stylesheet"
+        href="{% static 'core/css/errors.css' %}"
+    >
+{% endblock %}
+
+{% block content %}
+<section class="error-page">
+    <div class="error-page__content">
+        <p class="error-page__code">
+            404
+        </p>
+
+        <h1 class="error-page__title">
+            Страница не найдена
+        </h1>
+
+        <p class="error-page__text">
+            Возможно, страница была удалена,
+            перемещена или адрес указан неверно.
+        </p>
+
+        <div class="error-page__actions">
+            <a
+                class="error-page__primary"
+                href="{% url 'products:catalog' %}"
+            >
+                Перейти в каталог
+            </a>
+
+            <a
+                class="error-page__secondary"
+                href="{% url 'core:home' %}"
+            >
+                На главную
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
