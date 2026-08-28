@@ -1,112 +1,219 @@
 {% extends "core/base.html" %}
+{% load static %}
 
 {% block title %}Корзина | MONO LINE{% endblock %}
 
+{% block extra_css %}
+    <link
+        rel="stylesheet"
+        href="{% static 'cart/css/cart.css' %}"
+    >
+{% endblock %}
+
 {% block content %}
-<h1>Корзина</h1>
+<header class="cart-header">
+    <h1 class="cart-title">
+        Корзина
+    </h1>
+
+    {% if cart_items %}
+        <p class="cart-count">
+            Товаров: {{ total_quantity }}
+        </p>
+    {% endif %}
+</header>
 
 {% if cart_items %}
-    {% for item in cart_items %}
-        <article>
-            <h2>
-                <a
-                    href="{% url 'products:product_detail' item.product_slug %}"
-                >
-                    {{ item.product_name }}
-                </a>
+    <div class="cart-layout">
+        <section class="cart-items">
+            {% for item in cart_items %}
+                <article class="cart-item">
+                    <a
+                        class="cart-item__image"
+                        href="{% url 'products:product_detail' item.product_slug %}"
+                    >
+                        {% if item.image %}
+                            <img
+                                src="{{ item.image.url }}"
+                                alt="{{ item.product_name }}"
+                            >
+                        {% else %}
+                            <span class="cart-item__placeholder">
+                                Нет фото
+                            </span>
+                        {% endif %}
+                    </a>
+
+                    <div class="cart-item__content">
+                        <h2 class="cart-item__title">
+                            <a
+                                href="{% url 'products:product_detail' item.product_slug %}"
+                            >
+                                {{ item.product_name }}
+                            </a>
+                        </h2>
+
+                        <div class="cart-item__variant">
+                            <span>
+                                Цвет: {{ item.color }}
+                            </span>
+
+                            <span>
+                                Размер: {{ item.size }}
+                            </span>
+                        </div>
+
+                        <p class="cart-item__price">
+                            {% if item.has_discount %}
+                                <strong class="cart-item__price-current">
+                                    {{ item.price }} ₽
+                                </strong>
+
+                                <s class="cart-item__price-old">
+                                    {{ item.old_price }} ₽
+                                </s>
+                            {% else %}
+                                <strong class="cart-item__price-current">
+                                    {{ item.price }} ₽
+                                </strong>
+                            {% endif %}
+                        </p>
+
+                        <div class="cart-item__controls">
+                            <div class="cart-quantity">
+                                <form
+                                    class="cart-quantity__form"
+                                    method="post"
+                                    action="{% url 'cart:decrease_cart_quantity' item.variant_id %}"
+                                >
+                                    {% csrf_token %}
+
+                                    <button
+                                        class="cart-quantity__button"
+                                        type="submit"
+                                        aria-label="Уменьшить количество"
+                                        {% if item.quantity <= 1 %}disabled{% endif %}
+                                    >
+                                        −
+                                    </button>
+                                </form>
+
+                                <span class="cart-quantity__value">
+                                    {{ item.quantity }}
+                                </span>
+
+                                <form
+                                    class="cart-quantity__form"
+                                    method="post"
+                                    action="{% url 'cart:increase_cart_quantity' item.variant_id %}"
+                                >
+                                    {% csrf_token %}
+
+                                    <button
+                                        class="cart-quantity__button"
+                                        type="submit"
+                                        aria-label="Увеличить количество"
+                                        {% if item.quantity >= item.available_stock %}disabled{% endif %}
+                                    >
+                                        +
+                                    </button>
+                                </form>
+                            </div>
+
+                            <form
+                                class="cart-item__remove-form"
+                                method="post"
+                                action="{% url 'cart:remove_from_cart' item.variant_id %}"
+                            >
+                                {% csrf_token %}
+
+                                <button
+                                    class="cart-item__remove"
+                                    type="submit"
+                                >
+                                    Удалить
+                                </button>
+                            </form>
+                        </div>
+
+                        {% if not item.quantity_available %}
+                            <p class="cart-item__warning">
+                                Доступно только
+                                {{ item.available_stock }} шт.
+                            </p>
+                        {% endif %}
+                    </div>
+
+                    <div class="cart-item__total">
+                        <span class="cart-item__total-label">
+                            За позицию
+                        </span>
+
+                        <strong class="cart-item__total-price">
+                            {{ item.item_total }} ₽
+                        </strong>
+                    </div>
+                </article>
+            {% endfor %}
+        </section>
+
+        <aside class="cart-summary">
+            <h2 class="cart-summary__title">
+                Ваш заказ
             </h2>
 
-            <p>
-                Цвет: {{ item.color }}
-            </p>
-
-            <p>
-                Размер: {{ item.size }}
-            </p>
-
-            <div>
-                <form
-                    method="post"
-                    action="{% url 'cart:decrease_cart_quantity' item.variant_id %}"
-                >
-                    {% csrf_token %}
-                    <button type="submit">
-                        −
-                    </button>
-                </form>
-            
+            <div class="cart-summary__row">
                 <span>
-                    {{ item.quantity }}
+                    Количество
                 </span>
-            
-                <form
-                    method="post"
-                    action="{% url 'cart:increase_cart_quantity' item.variant_id %}"
-                >
-                    {% csrf_token %}
-                    <button
-                        type="submit"
-                        {% if item.quantity >= item.available_stock %}disabled{% endif %}
-                    >
-                        +
-                    </button>
-                </form>
+
+                <span>
+                    {{ total_quantity }}
+                </span>
             </div>
-            
-            <form
-                method="post"
-                action="{% url 'cart:remove_from_cart' item.variant_id %}"
+
+            <div class="cart-summary__total">
+                <span>
+                    Итого
+                </span>
+
+                <strong>
+                    {{ total_price }} ₽
+                </strong>
+            </div>
+
+            <a
+                class="cart-summary__checkout"
+                href="{% url 'orders:checkout' %}"
             >
-                {% csrf_token %}
-            
-                <button type="submit">
-                    Удалить
-                </button>
-            </form>
+                Оформить заказ
+            </a>
 
-            {% if item.has_discount %}
-                <p>
-                    <del>{{ item.old_price }} ₽</del>
-                    {{ item.price }} ₽
-                </p>
-            {% else %}
-                <p>
-                    {{ item.price }} ₽
-                </p>
-            {% endif %}
-
-            <p>
-                Итого за позицию:
-                {{ item.item_total }} ₽
-            </p>
-
-            {% if not item.quantity_available %}
-                <p>
-                    Доступно только {{ item.available_stock }} шт.
-                </p>
-            {% endif %}
-        </article>
-    {% endfor %}
-
-    <hr>
-
-    <p>
-        Товаров: {{ total_quantity }}
-    </p>
-
-    <strong>
-        Итого: {{ total_price }} ₽
-    </strong>
-    <p>
-        <a href="{% url 'orders:checkout' %}">
-            Оформить заказ
-        </a>
-    </p>
+            <a
+                class="cart-summary__continue"
+                href="{% url 'products:catalog' %}"
+            >
+                Продолжить покупки
+            </a>
+        </aside>
+    </div>
 {% else %}
-    <p>Корзина пока пуста.</p>
+    <section class="cart-empty">
+        <h2 class="cart-empty__title">
+            Корзина пуста
+        </h2>
 
-    <a href="{% url 'products:catalog' %}">
-        Перейти в каталог
-    </a>
+        <p class="cart-empty__text">
+            Добавьте товары из каталога,
+            чтобы оформить заказ.
+        </p>
+
+        <a
+            class="cart-empty__link"
+            href="{% url 'products:catalog' %}"
+        >
+            Перейти в каталог
+        </a>
+    </section>
 {% endif %}
 {% endblock %}

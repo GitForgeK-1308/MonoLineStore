@@ -373,3 +373,27 @@ class CartViewsTests(TestCase):
             response.status_code,
             405,
         )
+
+    def test_cart_detail_includes_stylesheet(self):
+        response = self.client.get(
+            reverse("cart:cart_detail"),
+        )
+
+        self.assertContains(
+            response,
+            "/static/cart/css/cart.css",
+        )
+
+    def test_cart_with_items_contains_checkout_link(self):
+        self.add_variant_to_session_cart(
+            quantity=1,
+        )
+
+        response = self.client.get(
+            reverse("cart:cart_detail"),
+        )
+
+        self.assertContains(
+            response,
+            reverse("orders:checkout"),
+        )
