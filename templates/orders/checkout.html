@@ -1,83 +1,183 @@
 {% extends "core/base.html" %}
+{% load static %}
 
 {% block title %}Оформление заказа | MONO LINE{% endblock %}
 
+{% block extra_css %}
+    <link
+        rel="stylesheet"
+        href="{% static 'orders/css/checkout.css' %}"
+    >
+{% endblock %}
+
 {% block content %}
-<h1>Оформление заказа</h1>
+<header class="checkout-header">
+    <h1 class="checkout-title">
+        Оформление заказа
+    </h1>
 
-<section>
-    <h2>Ваш заказ</h2>
+    <p class="checkout-subtitle">
+        Проверьте заказ и укажите данные для доставки.
+    </p>
+</header>
 
-    {% for item in cart_items %}
-        <article>
-            <h3>{{ item.product_name }}</h3>
+<div class="checkout-layout">
+    <section>
+        <h2 class="checkout-section-title">
+            Данные покупателя
+        </h2>
 
-            <p>
-                {{ item.color }},
-                {{ item.size }}
-            </p>
+        <form
+            class="checkout-form"
+            method="post"
+        >
+            {% csrf_token %}
 
-            <p>
-                {{ item.quantity }} × {{ item.price }} ₽
-            </p>
+            {% if form.non_field_errors %}
+                <div class="checkout-errors">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="checkout-form__grid">
+                <div class="checkout-field">
+                    {{ form.first_name.label_tag }}
+                    {{ form.first_name }}
+
+                    {% if form.first_name.errors %}
+                        <div class="checkout-field__errors">
+                            {{ form.first_name.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="checkout-field">
+                    {{ form.phone.label_tag }}
+                    {{ form.phone }}
+
+                    {% if form.phone.errors %}
+                        <div class="checkout-field__errors">
+                            {{ form.phone.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="checkout-field checkout-field--full">
+                    {{ form.email.label_tag }}
+                    {{ form.email }}
+
+                    {% if form.email.errors %}
+                        <div class="checkout-field__errors">
+                            {{ form.email.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="checkout-field checkout-field--full">
+                    {{ form.address.label_tag }}
+                    {{ form.address }}
+
+                    {% if form.address.errors %}
+                        <div class="checkout-field__errors">
+                            {{ form.address.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="checkout-field checkout-field--full">
+                    {{ form.comment.label_tag }}
+                    {{ form.comment }}
+
+                    {% if form.comment.errors %}
+                        <div class="checkout-field__errors">
+                            {{ form.comment.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <button
+                class="checkout-submit"
+                type="submit"
+            >
+                Оформить заказ
+            </button>
+        </form>
+    </section>
+
+    <aside class="checkout-summary">
+        <h2 class="checkout-summary__title">
+            Ваш заказ
+        </h2>
+
+        <div class="checkout-items">
+            {% for item in cart_items %}
+                <article class="checkout-item">
+                    <a
+                        class="checkout-item__image"
+                        href="{% url 'products:product_detail' item.product_slug %}"
+                    >
+                        {% if item.image %}
+                            <img
+                                src="{{ item.image.url }}"
+                                alt="{{ item.product_name }}"
+                            >
+                        {% else %}
+                            <span class="checkout-item__placeholder">
+                                Нет фото
+                            </span>
+                        {% endif %}
+                    </a>
+
+                    <div>
+                        <h3 class="checkout-item__name">
+                            {{ item.product_name }}
+                        </h3>
+
+                        <p class="checkout-item__variant">
+                            {{ item.color }},
+                            {{ item.size }}
+                        </p>
+
+                        <p class="checkout-item__quantity">
+                            {{ item.quantity }} ×
+                            {{ item.price }} ₽
+                        </p>
+                    </div>
+
+                    <strong class="checkout-item__price">
+                        {{ item.item_total }} ₽
+                    </strong>
+                </article>
+            {% endfor %}
+        </div>
+
+        <div class="checkout-summary__row">
+            <span>
+                Товаров
+            </span>
+
+            <span>
+                {{ total_quantity }}
+            </span>
+        </div>
+
+        <div class="checkout-summary__total">
+            <span>
+                Итого
+            </span>
 
             <strong>
-                {{ item.item_total }} ₽
+                {{ total_price }} ₽
             </strong>
-        </article>
-    {% endfor %}
+        </div>
 
-    <p>
-        Товаров: {{ total_quantity }}
-    </p>
-
-    <p>
-        Итого:
-        <strong>{{ total_price }} ₽</strong>
-    </p>
-</section>
-
-<section>
-    <h2>Данные покупателя</h2>
-
-    <form method="post">
-        {% csrf_token %}
-
-        {{ form.non_field_errors }}
-
-        <p>
-            {{ form.first_name.label_tag }}
-            {{ form.first_name }}
-            {{ form.first_name.errors }}
-        </p>
-
-        <p>
-            {{ form.phone.label_tag }}
-            {{ form.phone }}
-            {{ form.phone.errors }}
-        </p>
-
-        <p>
-            {{ form.email.label_tag }}
-            {{ form.email }}
-            {{ form.email.errors }}
-        </p>
-
-        <p>
-            {{ form.address.label_tag }}
-            {{ form.address }}
-            {{ form.address.errors }}
-        </p>
-
-        <p>
-            {{ form.comment.label_tag }}
-            {{ form.comment }}
-            {{ form.comment.errors }}
-        </p>
-
-        <button type="submit">
-            Оформить заказ
-        </button>
-    </form>
-</section>
+        <a
+            class="checkout-back"
+            href="{% url 'cart:cart_detail' %}"
+        >
+            ← Вернуться в корзину
+        </a>
+    </aside>
+</div>
 {% endblock %}

@@ -286,6 +286,32 @@ class CheckoutViewTests(TestCase):
             404,
         )
 
+    def test_checkout_includes_stylesheet(self):
+        self.add_product_to_cart()
+
+        response = self.client.get(
+            reverse("orders:checkout"),
+        )
+
+        self.assertContains(
+            response,
+            "/static/orders/css/checkout.css",
+        )
+
+    def test_checkout_displays_cart_total(self):
+        self.add_product_to_cart(
+            quantity=2,
+        )
+
+        response = self.client.get(
+            reverse("orders:checkout"),
+        )
+
+        self.assertContains(
+            response,
+            "9000.00",
+        )
+
 
 class OrderHistoryViewTests(TestCase):
     @classmethod
