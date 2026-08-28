@@ -1,8 +1,12 @@
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.contrib.auth.models import AnonymousUser
+from django.contrib.sessions.middleware import SessionMiddleware
+from django.core.exceptions import PermissionDenied
+from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
+from django.views import defaults
 
 from products.models import Category, Product
 
@@ -273,4 +277,134 @@ class HomeViewTests(TestCase):
         self.assertContains(
             response,
             f"{reverse('products:catalog')}?discount=1",
+        )
+
+
+class ErrorPageTests(TestCase):
+    def create_request(self, path):
+        request = RequestFactory().get(path)
+
+        middleware = SessionMiddleware(
+            lambda request: None,
+        )
+        middleware.process_request(request)
+
+        request.user = AnonymousUser()
+
+        return request
+
+    @override_settings(DEBUG=False)
+    def test_404_page_uses_custom_template(self):
+        response = self.client.get(
+            "/page-that-does-not-exist/",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            404,
+        )
+
+        self.assertTemplateUsed(
+            response,
+            "404.html",
+        )
+
+    @override_settings(DEBUG=False)
+    def test_404_page_includes_stylesheet(self):
+        response = self.client.get(
+            "/page-that-does-not-exist/",
+        )
+
+        self.assertContains(
+            response,
+            "/static/core/css/errors.css",
+            status_code=404,
+        )
+
+    @override_settings(DEBUG=False)
+    def test_404_page_contains_catalog_link(self):
+        response = self.client.get(
+            "/page-that-does-not-exist/",
+        )
+
+        self.assertContains(
+            response,
+            reverse("products:catalog"),
+            status_code=404,
+        )
+
+    @override_settings(DEBUG=False)
+    def test_403_page_is_custom(self):
+        request = self.create_request(
+            "/forbidden/",
+        )
+
+        response = defaults.permission_denied(
+            request,
+            PermissionDenied(),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            403,
+        )
+
+        self.assertContains(
+            response,
+            "Доступ запрещён",
+            status_code=403,
+        )
+
+    @override_settings(DEBUG=False)
+    def test_403_page_includes_stylesheet(self):
+        request = self.create_request(
+            "/forbidden/",
+        )
+
+        response = defaults.permission_denied(
+            request,
+            PermissionDenied(),
+        )
+
+        self.assertContains(
+            response,
+            "/static/core/css/errors.css",
+            status_code=403,
+        )
+
+    @override_settings(DEBUG=False)
+    def test_500_page_is_custom(self):
+        request = self.create_request(
+            "/broken/",
+        )
+
+        response = defaults.server_error(
+            request,
+        )
+
+        self.assertEqual(
+            response.status_code,
+            500,
+        )
+
+        self.assertContains(
+            response,
+            "Что-то пошло не так",
+            status_code=500,
+        )
+
+    @override_settings(DEBUG=False)
+    def test_500_page_includes_stylesheet(self):
+        request = self.create_request(
+            "/broken/",
+        )
+
+        response = defaults.server_error(
+            request,
+        )
+
+        self.assertContains(
+            response,
+            "/static/core/css/errors.css",
+            status_code=500,
         )

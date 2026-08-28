@@ -1,0 +1,46 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Доступ запрещён | MONO LINE{% endblock %}
+
+{% block extra_css %}
+    <link
+        rel="stylesheet"
+        href="{% static 'core/css/errors.css' %}"
+    >
+{% endblock %}
+
+{% block content %}
+<section class="error-page">
+    <div class="error-page__content">
+        <p class="error-page__code">
+            403
+        </p>
+
+        <h1 class="error-page__title">
+            Доступ запрещён
+        </h1>
+
+        <p class="error-page__text">
+            У вас нет доступа к этой странице.
+            Возможно, необходимо войти в другой аккаунт.
+        </p>
+
+        <div class="error-page__actions">
+            <a
+                class="error-page__primary"
+                href="{% url 'core:home' %}"
+            >
+                На главную
+            </a>
+
+            <a
+                class="error-page__secondary"
+                href="{% url 'products:catalog' %}"
+            >
+                Перейти в каталог
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

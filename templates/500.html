@@ -1,0 +1,78 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+    <meta
+        name="robots"
+        content="noindex"
+    >
+
+    <title>Ошибка сервера | MONO LINE</title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'core/css/base.css' %}"
+    >
+    <link
+        rel="stylesheet"
+        href="{% static 'core/css/errors.css' %}"
+    >
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="site-header__inner">
+            <a
+                class="site-logo"
+                href="{% url 'core:home' %}"
+            >
+                MONO LINE
+            </a>
+        </div>
+    </header>
+
+    <main class="site-main">
+        <div class="container">
+            <section class="error-page">
+                <div class="error-page__content">
+                    <p class="error-page__code">
+                        500
+                    </p>
+
+                    <h1 class="error-page__title">
+                        Что-то пошло не так
+                    </h1>
+
+                    <p class="error-page__text">
+                        На сервере произошла ошибка.
+                        Попробуйте обновить страницу
+                        или вернуться немного позже.
+                    </p>
+
+                    <div class="error-page__actions">
+                        <a
+                            class="error-page__primary"
+                            href="{% url 'core:home' %}"
+                        >
+                            На главную
+                        </a>
+
+                        <a
+                            class="error-page__secondary"
+                            href="{% url 'products:catalog' %}"
+                        >
+                            Перейти в каталог
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+</body>
+</html>
