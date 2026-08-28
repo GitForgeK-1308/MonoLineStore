@@ -279,6 +279,30 @@ class HomeViewTests(TestCase):
             f"{reverse('products:catalog')}?discount=1",
         )
 
+    def test_home_contains_footer(self):
+        response = self.client.get(
+            reverse("core:home"),
+        )
+
+        self.assertContains(
+            response,
+            "©",
+        )
+        self.assertContains(
+            response,
+            "MONO LINE",
+        )
+
+    def test_footer_contains_catalog_link(self):
+        response = self.client.get(
+            reverse("core:home"),
+        )
+
+        self.assertContains(
+            response,
+            reverse("products:catalog"),
+        )
+
 
 class ErrorPageTests(TestCase):
     def create_request(self, path):

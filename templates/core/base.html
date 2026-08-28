@@ -4,9 +4,15 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>{% block title %}MONO LINE{% endblock %}</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}MONO LINE{% endblock %}
+    </title>
 
     <link
         rel="stylesheet"
@@ -26,7 +32,10 @@
                 MONO LINE
             </a>
 
-            <nav class="site-nav">
+            <nav
+                class="site-nav"
+                aria-label="Основная навигация"
+            >
                 <a href="{% url 'products:catalog' %}">
                     Каталог
                 </a>
@@ -82,6 +91,67 @@
             {% block content %}{% endblock %}
         </div>
     </main>
+
+    <footer class="site-footer">
+        <div class="site-footer__inner">
+            <div class="site-footer__brand">
+                <a
+                    class="site-footer__logo"
+                    href="{% url 'core:home' %}"
+                >
+                    MONO LINE
+                </a>
+
+                <p class="site-footer__text">
+                    Минималистичная одежда
+                    на каждый день.
+                </p>
+            </div>
+
+            <nav
+                class="site-footer__nav"
+                aria-label="Навигация в подвале"
+            >
+                <a href="{% url 'core:home' %}">
+                    Главная
+                </a>
+
+                <a href="{% url 'products:catalog' %}">
+                    Каталог
+                </a>
+
+                <a href="{% url 'cart:cart_detail' %}">
+                    Корзина
+                </a>
+
+                {% if user.is_authenticated %}
+                    <a href="{% url 'accounts:profile' %}">
+                        Профиль
+                    </a>
+
+                    <a href="{% url 'orders:my_orders' %}">
+                        Мои заказы
+                    </a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}">
+                        Войти
+                    </a>
+                {% endif %}
+            </nav>
+        </div>
+
+        <div class="site-footer__bottom">
+            <div class="site-footer__bottom-inner">
+                <span>
+                    © {% now "Y" %} MONO LINE
+                </span>
+
+                <span>
+                    Django Store
+                </span>
+            </div>
+        </div>
+    </footer>
 
     {% block extra_js %}{% endblock %}
 </body>

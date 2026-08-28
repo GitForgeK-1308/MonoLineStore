@@ -7,6 +7,9 @@ html {
 }
 
 body {
+    display: flex;
+    flex-direction: column;
+
     margin: 0;
     min-height: 100vh;
 
@@ -87,7 +90,6 @@ img {
     padding: 0;
 
     color: inherit;
-
     background: none;
     border: 0;
 }
@@ -101,6 +103,8 @@ img {
 }
 
 .site-main {
+    flex: 1;
+
     padding: 48px 0 80px;
 }
 
@@ -174,6 +178,82 @@ img {
 }
 
 
+/* Footer */
+
+.site-footer {
+    margin-top: auto;
+
+    color: #ffffff;
+    background: #111111;
+}
+
+.site-footer__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 64px;
+
+    width: min(1200px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 56px 0;
+}
+
+.site-footer__brand {
+    max-width: 320px;
+}
+
+.site-footer__logo {
+    display: inline-block;
+
+    margin-bottom: 16px;
+
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+}
+
+.site-footer__text {
+    margin: 0;
+
+    color: #a8a8a8;
+    line-height: 1.6;
+}
+
+.site-footer__nav {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: 14px 40px;
+    align-content: start;
+}
+
+.site-footer__nav a {
+    color: #d8d8d8;
+
+    transition: color 0.2s ease;
+}
+
+.site-footer__nav a:hover {
+    color: #ffffff;
+}
+
+.site-footer__bottom {
+    border-top: 1px solid #333333;
+}
+
+.site-footer__bottom-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    width: min(1200px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 20px 0;
+
+    color: #777777;
+    font-size: 0.8rem;
+}
+
+
 /* Responsive */
 
 @media (max-width: 800px) {
@@ -192,5 +272,28 @@ img {
 
     .site-main {
         padding-top: 32px;
+    }
+
+    .site-footer__inner {
+        grid-template-columns: 1fr;
+        gap: 36px;
+
+        padding: 44px 0;
+    }
+
+    .site-footer__nav {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 500px) {
+    .site-footer__nav {
+        grid-template-columns: 1fr;
+    }
+
+    .site-footer__bottom-inner {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
     }
 }
