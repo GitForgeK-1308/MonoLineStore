@@ -1,66 +1,122 @@
 {% extends "core/base.html" %}
+{% load static %}
 
 {% block title %}Мои заказы | MONO LINE{% endblock %}
 
+{% block extra_css %}
+    <link
+        rel="stylesheet"
+        href="{% static 'orders/css/order_history.css' %}"
+    >
+{% endblock %}
+
 {% block content %}
-<h1>Мои заказы</h1>
+<header class="orders-header">
+    <h1 class="orders-title">
+        Мои заказы
+    </h1>
+
+    <p class="orders-subtitle">
+        История ваших покупок в MONO LINE.
+    </p>
+</header>
 
 {% if orders %}
-    {% for order in orders %}
-        <article>
-            <h2>
-                <a href="{% url 'orders:order_detail' order.pk %}">
-                    Заказ №{{ order.pk }}
-                </a>
-            </h2>
+    <section class="orders-list">
+        {% for order in orders %}
+            <article class="order-card">
+                <div>
+                    <div class="order-card__top">
+                        <h2 class="order-card__number">
+                            <a
+                                href="{% url 'orders:order_detail' order.pk %}"
+                            >
+                                Заказ №{{ order.pk }}
+                            </a>
+                        </h2>
 
-            <p>
-                Дата:
-                {{ order.created_at|date:"d.m.Y H:i" }}
-            </p>
+                        <span
+                            class="order-status order-status--{{ order.status }}"
+                        >
+                            {{ order.get_status_display }}
+                        </span>
+                    </div>
 
-            <p>
-                Статус:
-                {{ order.get_status_display }}
-            </p>
+                    <div class="order-card__meta">
+                        <p>
+                            {{ order.created_at|date:"d.m.Y H:i" }}
+                        </p>
 
-            <p>
-                Позиций:
-                {{ order.items.all|length }}
-            </p>
+                        <p>
+                            Позиций:
+                            {{ order.items.all|length }}
+                        </p>
+                    </div>
+                </div>
 
-            <strong>
-                {{ order.total_price }} ₽
-            </strong>
-        </article>
-    {% endfor %}
+                <div class="order-card__side">
+                    <strong class="order-card__price">
+                        {{ order.total_price }} ₽
+                    </strong>
+
+                    <a
+                        class="order-card__link"
+                        href="{% url 'orders:order_detail' order.pk %}"
+                    >
+                        Подробнее →
+                    </a>
+                </div>
+            </article>
+        {% endfor %}
+    </section>
 
     {% if is_paginated %}
-        <nav>
+        <nav
+            class="orders-pagination"
+            aria-label="Навигация по заказам"
+        >
             {% if page_obj.has_previous %}
-                <a href="?page={{ page_obj.previous_page_number }}">
-                    Назад
+                <a
+                    class="orders-pagination__link"
+                    href="?page={{ page_obj.previous_page_number }}"
+                >
+                    ← Назад
                 </a>
             {% endif %}
 
-            <span>
+            <span class="orders-pagination__current">
                 {{ page_obj.number }}
                 /
                 {{ page_obj.paginator.num_pages }}
             </span>
 
             {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}">
-                    Вперёд
+                <a
+                    class="orders-pagination__link"
+                    href="?page={{ page_obj.next_page_number }}"
+                >
+                    Вперёд →
                 </a>
             {% endif %}
         </nav>
     {% endif %}
 {% else %}
-    <p>У вас пока нет заказов.</p>
+    <section class="orders-empty">
+        <h2 class="orders-empty__title">
+            Заказов пока нет
+        </h2>
 
-    <a href="{% url 'products:catalog' %}">
-        Перейти в каталог
-    </a>
+        <p class="orders-empty__text">
+            После оформления покупки
+            ваши заказы появятся здесь.
+        </p>
+
+        <a
+            class="orders-empty__link"
+            href="{% url 'products:catalog' %}"
+        >
+            Перейти в каталог
+        </a>
+    </section>
 {% endif %}
 {% endblock %}

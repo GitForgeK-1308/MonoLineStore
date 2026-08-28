@@ -523,3 +523,26 @@ class OrderHistoryViewTests(TestCase):
             response.context["paginator"].per_page,
             10,
         )
+
+    def test_order_list_includes_stylesheet(self):
+        response = self.client.get(
+            reverse("orders:my_orders"),
+        )
+
+        self.assertContains(
+            response,
+            "/static/orders/css/order_history.css",
+        )
+
+    def test_order_detail_includes_stylesheet(self):
+        response = self.client.get(
+            reverse(
+                "orders:order_detail",
+                args=[self.order.pk],
+            )
+        )
+
+        self.assertContains(
+            response,
+            "/static/orders/css/order_history.css",
+        )

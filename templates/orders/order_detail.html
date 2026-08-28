@@ -1,78 +1,124 @@
 {% extends "core/base.html" %}
+{% load static %}
 
 {% block title %}Заказ №{{ order.pk }} | MONO LINE{% endblock %}
 
+{% block extra_css %}
+    <link
+        rel="stylesheet"
+        href="{% static 'orders/css/order_history.css' %}"
+    >
+{% endblock %}
+
 {% block content %}
-<a href="{% url 'orders:my_orders' %}">
+<a
+    class="order-detail__back"
+    href="{% url 'orders:my_orders' %}"
+>
     ← Мои заказы
 </a>
 
-<h1>Заказ №{{ order.pk }}</h1>
+<header class="order-detail__header">
+    <div>
+        <h1 class="order-detail__title">
+            Заказ №{{ order.pk }}
+        </h1>
 
-<p>
-    Дата:
-    {{ order.created_at|date:"d.m.Y H:i" }}
-</p>
-
-<p>
-    Статус:
-    {{ order.get_status_display }}
-</p>
-
-<section>
-    <h2>Доставка</h2>
-
-    <p>
-        {{ order.first_name }}
-    </p>
-
-    <p>
-        {{ order.phone }}
-    </p>
-
-    <p>
-        {{ order.email }}
-    </p>
-
-    <p>
-        {{ order.address }}
-    </p>
-
-    {% if order.comment %}
-        <p>
-            Комментарий:
-            {{ order.comment }}
+        <p class="order-detail__date">
+            {{ order.created_at|date:"d.m.Y H:i" }}
         </p>
-    {% endif %}
-</section>
+    </div>
 
-<section>
-    <h2>Состав заказа</h2>
+    <span
+        class="order-status order-status--{{ order.status }}"
+    >
+        {{ order.get_status_display }}
+    </span>
+</header>
 
-    {% for item in order.items.all %}
-        <article>
-            <h3>{{ item.product_name }}</h3>
+<div class="order-detail__layout">
+    <div>
+        <section class="order-detail__section">
+            <h2 class="order-detail__section-title">
+                Состав заказа
+            </h2>
 
-            <p>
-                Цвет: {{ item.color }}
-            </p>
+            <div class="order-detail__items">
+                {% for item in order.items.all %}
+                    <article class="order-detail__item">
+                        <div>
+                            <h3 class="order-detail__item-name">
+                                {{ item.product_name }}
+                            </h3>
 
-            <p>
-                Размер: {{ item.size }}
-            </p>
+                            <p class="order-detail__item-meta">
+                                <span>
+                                    Цвет: {{ item.color }}
+                                </span>
 
-            <p>
-                {{ item.quantity }} × {{ item.price }} ₽
-            </p>
+                                <span>
+                                    Размер: {{ item.size }}
+                                </span>
+                            </p>
+
+                            <p class="order-detail__item-quantity">
+                                {{ item.quantity }} ×
+                                {{ item.price }} ₽
+                            </p>
+                        </div>
+
+                        <strong class="order-detail__item-price">
+                            {{ item.total_price }} ₽
+                        </strong>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+
+    <aside class="order-detail__summary">
+        <h2 class="order-detail__summary-title">
+            Доставка
+        </h2>
+
+        <dl class="order-detail__info">
+            <div class="order-detail__info-row">
+                <dt>Получатель</dt>
+                <dd>{{ order.first_name }}</dd>
+            </div>
+
+            <div class="order-detail__info-row">
+                <dt>Телефон</dt>
+                <dd>{{ order.phone }}</dd>
+            </div>
+
+            <div class="order-detail__info-row">
+                <dt>Email</dt>
+                <dd>{{ order.email }}</dd>
+            </div>
+
+            <div class="order-detail__info-row">
+                <dt>Адрес</dt>
+                <dd>{{ order.address }}</dd>
+            </div>
+
+            {% if order.comment %}
+                <div class="order-detail__info-row">
+                    <dt>Комментарий</dt>
+                    <dd>{{ order.comment }}</dd>
+                </div>
+            {% endif %}
+        </dl>
+
+        <div class="order-detail__total">
+            <span>
+                Итого
+            </span>
 
             <strong>
-                {{ item.total_price }} ₽
+                {{ order.total_price }} ₽
             </strong>
-        </article>
-    {% endfor %}
-</section>
-
-<h2>
-    Итого: {{ order.total_price }} ₽
-</h2>
+        </div>
+    </aside>
+</div>
 {% endblock %}
