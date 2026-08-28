@@ -4,6 +4,7 @@ from django.template.loader import render_to_string
 from django.templatetags.static import static
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.formats import localize
 
 from products.models import Category, Product
 
@@ -64,7 +65,7 @@ class ProductCardTemplateTests(TestCase):
         )
 
         self.assertIn(
-            "2000.00",
+            localize(self.regular_product.price),
             html,
         )
 
@@ -74,11 +75,13 @@ class ProductCardTemplateTests(TestCase):
         )
 
         self.assertIn(
-            "5000.00",
+            localize(self.discounted_product.price),
             html,
         )
         self.assertIn(
-            "4500.00",
+            localize(
+                self.discounted_product.discounted_price,
+            ),
             html,
         )
 

@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.templatetags.static import static
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.formats import localize
 
 from cart.services import CART_SESSION_KEY
 from orders.models import Order
@@ -310,7 +311,7 @@ class CheckoutViewTests(TestCase):
 
         self.assertContains(
             response,
-            "9000.00",
+            localize(Decimal("9000.00")),
         )
 
     def test_order_success_includes_stylesheet(self):
@@ -356,7 +357,7 @@ class CheckoutViewTests(TestCase):
 
         self.assertContains(
             response,
-            "9000.00",
+            localize(Decimal("9000.00")),
         )
 
 
