@@ -73,6 +73,11 @@ INSTALLED_APPS = [
     "core",
 ]
 
+if DEBUG:
+    INSTALLED_APPS.append(
+        "debug_toolbar",
+    )
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -83,6 +88,13 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+if DEBUG:
+    MIDDLEWARE.insert(
+        2,
+        "debug_toolbar.middleware.DebugToolbarMiddleware",
+    )
+
 
 ROOT_URLCONF = "config.urls"
 
@@ -119,6 +131,10 @@ DATABASES = {
     }
 }
 
+if DEBUG:
+    INTERNAL_IPS = [
+        "127.0.0.1",
+    ]
 
 # Password validation
 # https://docs.djangoproject.com/en/6.1/ref/settings/#auth-password-validators
