@@ -124,6 +124,12 @@
     background: #333333;
 }
 
+.auth-reset {
+    margin-top: -6px;
+
+    text-align: right;
+}
+
 .auth-bottom {
     display: flex;
     align-items: center;

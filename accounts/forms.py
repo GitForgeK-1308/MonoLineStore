@@ -1,9 +1,17 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import (
+    AuthenticationForm,
+    PasswordResetForm,
+    SetPasswordForm,
+    UserCreationForm,
+)
 from django.contrib.auth.password_validation import (
     password_validators_help_text_html,
 )
+from django.template import loader
+
+from .tasks import send_password_reset_email
 
 User = get_user_model()
 
@@ -88,3 +96,78 @@ class UserLoginForm(AuthenticationForm):
         "invalid_login": "Неверный email или пароль.",
         "inactive": "Этот аккаунт неактивен.",
     }
+
+
+class AsyncPasswordResetForm(PasswordResetForm):
+    email = forms.EmailField(
+        label="Email",
+        widget=forms.EmailInput(
+            attrs={
+                "class": "form-input",
+                "placeholder": "Введите email",
+                "autocomplete": "email",
+            }
+        ),
+    )
+
+    def send_mail(
+        self,
+        subject_template_name,
+        email_template_name,
+        context,
+        from_email,
+        to_email,
+        html_email_template_name=None,
+    ):
+        subject = loader.render_to_string(
+            subject_template_name,
+            context,
+        )
+
+        subject = "".join(
+            subject.splitlines(),
+        )
+
+        body = loader.render_to_string(
+            email_template_name,
+            context,
+        )
+
+        html_body = None
+
+        if html_email_template_name:
+            html_body = loader.render_to_string(
+                html_email_template_name,
+                context,
+            )
+
+        send_password_reset_email.delay(
+            subject,
+            body,
+            from_email,
+            to_email,
+            html_body,
+        )
+
+
+class UserSetPasswordForm(SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["new_password1"].label = "Новый пароль"
+        self.fields["new_password1"].widget.attrs.update(
+            {
+                "class": "form-input",
+                "placeholder": "Введите новый пароль",
+                "autocomplete": "new-password",
+            }
+        )
+
+        self.fields["new_password2"].label = "Повтор пароля"
+        self.fields["new_password2"].widget.attrs.update(
+            {
+                "class": "form-input",
+                "placeholder": "Повторите новый пароль",
+                "autocomplete": "new-password",
+            }
+        )

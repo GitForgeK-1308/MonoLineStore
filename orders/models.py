@@ -5,7 +5,6 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
 
-
 phone_validator = RegexValidator(
     regex=r"^\+[1-9]\d{7,14}$",
     message=("Введите номер телефона в международном формате, например +79990000000."),

@@ -1,6 +1,8 @@
+from unittest.mock import patch
+
 from django.test import TestCase
 
-from accounts.forms import UserLoginForm, UserRegisterForm
+from accounts.forms import AsyncPasswordResetForm, UserLoginForm, UserRegisterForm
 from accounts.models import CustomUser
 
 
@@ -112,3 +114,37 @@ class UserLoginFormTests(TestCase):
         )
 
         self.assertFalse(form.is_valid())
+
+
+class AsyncPasswordResetFormTests(TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(
+            email="reset@example.com",
+            password="StrongPassword123!",
+        )
+
+    @patch(
+        "accounts.forms.send_password_reset_email.delay",
+    )
+    def test_password_reset_email_is_sent_via_celery(
+        self,
+        delay_mock,
+    ):
+        form = AsyncPasswordResetForm(
+            data={
+                "email": self.user.email,
+            }
+        )
+
+        self.assertTrue(
+            form.is_valid(),
+        )
+
+        form.save(
+            domain_override="example.com",
+            use_https=False,
+            subject_template_name=("accounts/password_reset_subject.txt"),
+            email_template_name=("accounts/password_reset_email.txt"),
+        )
+
+        delay_mock.assert_called_once()
