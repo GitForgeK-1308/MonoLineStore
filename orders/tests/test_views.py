@@ -312,6 +312,52 @@ class CheckoutViewTests(TestCase):
             "9000.00",
         )
 
+    def test_order_success_includes_stylesheet(self):
+        self.add_product_to_cart()
+
+        self.client.post(
+            reverse("orders:checkout"),
+            self.get_order_data(),
+        )
+
+        order = Order.objects.get()
+
+        response = self.client.get(
+            reverse(
+                "orders:order_success",
+                args=[order.pk],
+            )
+        )
+
+        self.assertContains(
+            response,
+            "/static/orders/css/order_success.css",
+        )
+
+    def test_order_success_displays_total_price(self):
+        self.add_product_to_cart(
+            quantity=2,
+        )
+
+        self.client.post(
+            reverse("orders:checkout"),
+            self.get_order_data(),
+        )
+
+        order = Order.objects.get()
+
+        response = self.client.get(
+            reverse(
+                "orders:order_success",
+                args=[order.pk],
+            )
+        )
+
+        self.assertContains(
+            response,
+            "9000.00",
+        )
+
 
 class OrderHistoryViewTests(TestCase):
     @classmethod

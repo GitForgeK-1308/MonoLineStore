@@ -1,44 +1,96 @@
 {% extends "core/base.html" %}
+{% load static %}
 
 {% block title %}Заказ оформлен | MONO LINE{% endblock %}
 
+{% block extra_css %}
+    <link
+        rel="stylesheet"
+        href="{% static 'orders/css/order_success.css' %}"
+    >
+{% endblock %}
+
 {% block content %}
-<h1>Заказ оформлен</h1>
+<section class="order-success">
+    <header class="order-success__header">
+        <div
+            class="order-success__mark"
+            aria-hidden="true"
+        >
+            ✓
+        </div>
 
-<p>
-    Спасибо! Ваш заказ №{{ order.pk }} успешно создан.
-</p>
+        <h1 class="order-success__title">
+            Заказ оформлен
+        </h1>
 
-<p>
-    Итоговая сумма:
-    <strong>{{ order.total_price }} ₽</strong>
-</p>
-
-<h2>Состав заказа</h2>
-
-{% for item in order.items.all %}
-    <article>
-        <h3>{{ item.product_name }}</h3>
-
-        <p>
-            {{ item.color }},
-            {{ item.size }}
+        <p class="order-success__text">
+            Спасибо! Ваш заказ
+            <span class="order-success__number">
+                №{{ order.pk }}
+            </span>
+            успешно создан.
         </p>
+    </header>
 
-        <p>
-            {{ item.quantity }} × {{ item.price }} ₽
-        </p>
+    <div class="order-success__summary">
+        <div class="order-success__summary-row">
+            <span class="order-success__summary-label">
+                Итоговая сумма
+            </span>
 
-        <strong>
-            {{ item.total_price }} ₽
-        </strong>
-    </article>
-{% endfor %}
+            <strong class="order-success__summary-price">
+                {{ order.total_price }} ₽
+            </strong>
+        </div>
+    </div>
 
-<a href="{% url 'orders:my_orders' %}">
-    Посмотреть мои заказы
-</a>
-<a href="{% url 'products:catalog' %}">
-    Вернуться в каталог
-</a>
+    <section>
+        <h2 class="order-success__section-title">
+            Состав заказа
+        </h2>
+
+        <div class="order-success__items">
+            {% for item in order.items.all %}
+                <article class="order-success__item">
+                    <div>
+                        <h3 class="order-success__item-name">
+                            {{ item.product_name }}
+                        </h3>
+
+                        <p class="order-success__item-meta">
+                            {{ item.color }},
+                            {{ item.size }}
+                        </p>
+
+                        <p class="order-success__item-quantity">
+                            {{ item.quantity }} ×
+                            {{ item.price }} ₽
+                        </p>
+                    </div>
+
+                    <strong class="order-success__item-price">
+                        {{ item.total_price }} ₽
+                    </strong>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <div class="order-success__actions">
+        <a
+            class="order-success__primary"
+            href="{% url 'orders:my_orders' %}"
+        >
+            Посмотреть мои заказы
+        </a>
+
+        <a
+            class="order-success__secondary"
+            href="{% url 'products:catalog' %}"
+        >
+            Вернуться в каталог
+        </a>
+    </div>
+</section>
 {% endblock %}
