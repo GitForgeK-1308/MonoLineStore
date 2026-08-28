@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
+from django.templatetags.static import static
 from django.test import TestCase
 from django.urls import reverse
 
@@ -295,7 +296,7 @@ class CheckoutViewTests(TestCase):
 
         self.assertContains(
             response,
-            "/static/orders/css/checkout.css",
+            static("orders/css/checkout.css"),
         )
 
     def test_checkout_displays_cart_total(self):
@@ -331,7 +332,7 @@ class CheckoutViewTests(TestCase):
 
         self.assertContains(
             response,
-            "/static/orders/css/order_success.css",
+            static("orders/css/order_success.css"),
         )
 
     def test_order_success_displays_total_price(self):
@@ -531,7 +532,7 @@ class OrderHistoryViewTests(TestCase):
 
         self.assertContains(
             response,
-            "/static/orders/css/order_history.css",
+            static("orders/css/order_history.css"),
         )
 
     def test_order_detail_includes_stylesheet(self):
@@ -544,5 +545,5 @@ class OrderHistoryViewTests(TestCase):
 
         self.assertContains(
             response,
-            "/static/orders/css/order_history.css",
+            static("orders/css/order_history.css"),
         )

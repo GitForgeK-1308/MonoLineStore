@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.template.loader import render_to_string
+from django.templatetags.static import static
 from django.test import TestCase
 from django.urls import reverse
 
@@ -106,7 +107,7 @@ class CatalogTemplateTests(TestCase):
 
         self.assertContains(
             response,
-            "/static/products/css/catalog.css",
+            static("products/css/catalog.css"),
         )
 
     def test_catalog_pagination_preserves_filters(self):
@@ -158,7 +159,7 @@ class ProductDetailTemplateTests(TestCase):
 
         self.assertContains(
             response,
-            "/static/products/css/product_detail.css",
+            static("products/css/product_detail.css"),
         )
 
     def test_related_products_use_product_card(self):
@@ -178,5 +179,5 @@ class ProductDetailTemplateTests(TestCase):
 
         self.assertContains(
             response,
-            "/static/products/js/product_detail.js",
+            static("products/js/product_detail.js"),
         )

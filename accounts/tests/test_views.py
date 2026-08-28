@@ -1,3 +1,4 @@
+from django.templatetags.static import static
 from django.test import TestCase
 from django.urls import reverse
 
@@ -72,7 +73,7 @@ class UserRegisterViewTests(TestCase):
 
         self.assertContains(
             response,
-            "/static/accounts/css/accounts.css",
+            static("accounts/css/accounts.css"),
         )
 
 
@@ -117,7 +118,7 @@ class UserProfileViewTests(TestCase):
 
         self.assertContains(
             response,
-            "/static/accounts/css/accounts.css",
+            static("accounts/css/accounts.css"),
         )
 
 
@@ -182,7 +183,7 @@ class UserLoginViewTests(TestCase):
 
         self.assertContains(
             response,
-            "/static/accounts/css/accounts.css",
+            static("accounts/css/accounts.css"),
         )
 
 

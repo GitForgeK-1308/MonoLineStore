@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from django.templatetags.static import static
 from django.test import TestCase
 from django.urls import reverse
 
@@ -381,7 +382,7 @@ class CartViewsTests(TestCase):
 
         self.assertContains(
             response,
-            "/static/cart/css/cart.css",
+            static("cart/css/cart.css"),
         )
 
     def test_cart_with_items_contains_checkout_link(self):

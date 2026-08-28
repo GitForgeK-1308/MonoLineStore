@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.core.exceptions import PermissionDenied
+from django.templatetags.static import static
 from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
 from django.views import defaults
@@ -236,7 +237,7 @@ class HomeViewTests(TestCase):
 
         self.assertContains(
             response,
-            "/static/core/css/base.css",
+            static("core/css/base.css"),
         )
 
     def test_home_includes_home_stylesheet(self):
@@ -246,7 +247,7 @@ class HomeViewTests(TestCase):
 
         self.assertContains(
             response,
-            "/static/core/css/home.css",
+            static("core/css/home.css"),
         )
 
     def test_home_includes_product_card_stylesheet(self):
@@ -256,7 +257,7 @@ class HomeViewTests(TestCase):
 
         self.assertContains(
             response,
-            "/static/products/css/product_card.css",
+            static("products/css/product_card.css"),
         )
 
     def test_home_popular_link_uses_catalog_filter(self):
@@ -341,7 +342,7 @@ class ErrorPageTests(TestCase):
 
         self.assertContains(
             response,
-            "/static/core/css/errors.css",
+            static("core/css/errors.css"),
             status_code=404,
         )
 
@@ -392,7 +393,7 @@ class ErrorPageTests(TestCase):
 
         self.assertContains(
             response,
-            "/static/core/css/errors.css",
+            static("core/css/errors.css"),
             status_code=403,
         )
 
@@ -429,6 +430,6 @@ class ErrorPageTests(TestCase):
 
         self.assertContains(
             response,
-            "/static/core/css/errors.css",
+            static("core/css/errors.css"),
             status_code=500,
         )
