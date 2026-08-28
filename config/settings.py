@@ -73,7 +73,12 @@ INSTALLED_APPS = [
     "core",
 ]
 
-if DEBUG:
+DEBUG_TOOLBAR_ENABLED = env.bool(
+    "DJANGO_DEBUG_TOOLBAR",
+    default=False,
+)
+
+if DEBUG and DEBUG_TOOLBAR_ENABLED:
     INSTALLED_APPS.append(
         "debug_toolbar",
     )
@@ -89,7 +94,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-if DEBUG:
+if DEBUG and DEBUG_TOOLBAR_ENABLED:
     MIDDLEWARE.insert(
         2,
         "debug_toolbar.middleware.DebugToolbarMiddleware",
