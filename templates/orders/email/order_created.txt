@@ -1,0 +1,25 @@
+MONO LINE
+
+Здравствуйте, {{ order.first_name }}!
+
+Ваш заказ №{{ order.pk }} успешно оформлен.
+
+Состав заказа:
+{% for item in order.items.all %}
+- {{ item.product_name }}
+  Цвет: {{ item.color }}
+  Размер: {{ item.size }}
+  {{ item.quantity }} × {{ item.price }} ₽
+{% endfor %}
+
+Итого: {{ order.total_price }} ₽
+
+Адрес доставки:
+{{ order.address }}
+
+Статус заказа:
+{{ order.get_status_display }}
+
+Спасибо за заказ!
+
+MONO LINE

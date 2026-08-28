@@ -10,6 +10,7 @@ from .exceptions import (
     InsufficientStockError,
 )
 from .models import Order, OrderItem
+from .tasks import send_order_created_email
 
 
 @transaction.atomic
@@ -127,6 +128,12 @@ def create_order_from_cart(
         )
 
     OrderItem.objects.bulk_create(order_items)
+
+    transaction.on_commit(
+        lambda: send_order_created_email.delay(
+            order.pk,
+        )
+    )
 
     return order
 
