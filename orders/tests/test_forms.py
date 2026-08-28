@@ -98,3 +98,17 @@ class OrderCreateFormTests(TestCase):
             "user",
             form.fields,
         )
+
+    def test_invalid_phone_is_rejected(self):
+        data = self.get_valid_data()
+        data["phone"] = "abc123"
+
+        form = OrderCreateForm(
+            data=data,
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn(
+            "phone",
+            form.errors,
+        )
