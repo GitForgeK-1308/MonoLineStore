@@ -2,7 +2,6 @@ from django.core.cache import cache
 
 from .models import Category
 
-
 CATEGORIES_CACHE_KEY = "products:categories"
 CATEGORIES_CACHE_TIMEOUT = 300
 
