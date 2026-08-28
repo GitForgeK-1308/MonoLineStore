@@ -121,3 +121,62 @@ class CatalogTemplateTests(TestCase):
             response,
             "?discount=1&amp;page=2",
         )
+
+
+class ProductDetailTemplateTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.category = Category.objects.create(
+            name="Detail Category",
+            slug="detail-template-category",
+        )
+
+        cls.product = Product.objects.create(
+            category=cls.category,
+            name="MONO Detail Hoodie",
+            slug="mono-detail-hoodie",
+            price=Decimal("5000.00"),
+        )
+
+        cls.related_product = Product.objects.create(
+            category=cls.category,
+            name="MONO Related Hoodie",
+            slug="mono-related-hoodie",
+            price=Decimal("4500.00"),
+        )
+
+    def get_response(self):
+        return self.client.get(
+            reverse(
+                "products:product_detail",
+                args=[self.product.slug],
+            ),
+        )
+
+    def test_product_detail_includes_stylesheet(self):
+        response = self.get_response()
+
+        self.assertContains(
+            response,
+            "/static/products/css/product_detail.css",
+        )
+
+    def test_related_products_use_product_card(self):
+        response = self.get_response()
+
+        self.assertContains(
+            response,
+            "MONO Related Hoodie",
+        )
+        self.assertContains(
+            response,
+            'class="product-card"',
+        )
+
+    def test_product_detail_includes_variant_script(self):
+        response = self.get_response()
+
+        self.assertContains(
+            response,
+            "/static/products/js/product_detail.js",
+        )

@@ -24,44 +24,37 @@ class AddToCartForm(forms.Form):
         self.product = product
         self.available_colors = []
         self.available_sizes = []
+        self.available_combinations = []
 
         if product is None:
             self.fields["color"].choices = []
             self.fields["size"].choices = []
             return
 
-        all_variants = ProductVariant.objects.filter(
-            product=product,
-        )
-        available_variants = all_variants.filter(
-            stock__gt=0,
-        )
+        all_variants = list(product.variants.all())
 
-        all_colors = set(
-            all_variants.values_list(
-                "color",
-                flat=True,
-            )
-        )
-        all_sizes = set(
-            all_variants.values_list(
-                "size",
-                flat=True,
-            )
-        )
+        available_variants = [variant for variant in all_variants if variant.in_stock]
+
+        all_colors = {variant.color for variant in all_variants}
+
+        all_sizes = {variant.size for variant in all_variants}
 
         self.available_colors = list(
-            available_variants.values_list(
-                "color",
-                flat=True,
-            ).distinct()
+            dict.fromkeys(variant.color for variant in available_variants)
         )
+
         self.available_sizes = list(
-            available_variants.values_list(
-                "size",
-                flat=True,
-            ).distinct()
+            dict.fromkeys(variant.size for variant in available_variants)
         )
+
+        self.available_combinations = [
+            {
+                "color": variant.color,
+                "size": variant.size,
+                "stock": variant.stock,
+            }
+            for variant in available_variants
+        ]
 
         self.fields["color"].choices = [
             (value, label)

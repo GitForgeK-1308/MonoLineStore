@@ -1,85 +1,222 @@
 {% extends "core/base.html" %}
+{% load static %}
 
 {% block title %}{{ product.name }} | MONO LINE{% endblock %}
 
-{% block content %}
-<section>
-    <a href="{% url 'products:catalog' %}">
-        ← Вернуться в каталог
-    </a>
-
-    <h1>{{ product.name }}</h1>
-
-    <p>{{ product.category.name }}</p>
-
-    {% if product.description %}
-        <p>{{ product.description }}</p>
-    {% endif %}
-
-    {% if product.discount %}
-        <p>
-            <del>{{ product.price }} ₽</del>
-            <strong>{{ product.discounted_price }} ₽</strong>
-        </p>
-    {% else %}
-        <p>{{ product.price }} ₽</p>
-    {% endif %}
-
-    {% if has_stock %}
-        <p>В наличии</p>
-    {% else %}
-        <p>Нет в наличии</p>
-    {% endif %}
-
-    {% if form.color.field.choices %}
-    <h2>Варианты</h2>
-
-    <form
-        method="post"
-        action="{% url 'cart:add_to_cart' product.slug %}"
+{% block extra_css %}
+    <link
+        rel="stylesheet"
+        href="{% static 'products/css/product_card.css' %}"
     >
-        {% csrf_token %}
+    <link
+        rel="stylesheet"
+        href="{% static 'products/css/product_detail.css' %}"
+    >
+{% endblock %}
 
-        <p>{{ form.color.label }}</p>
-        {{ form.color }}
+{% block content %}
+<section class="product-detail">
+    <div class="product-detail__gallery">
+        <div class="product-detail__main-image">
+            {% if product.image %}
+                <img
+                    src="{{ product.image.url }}"
+                    alt="{{ product.name }}"
+                >
+            {% else %}
+                <span class="product-detail__placeholder">
+                    Нет фото
+                </span>
+            {% endif %}
+        </div>
 
-        <p>{{ form.size.label }}</p>
-        {{ form.size }}
+        {% if product.images.all %}
+            <div class="product-detail__gallery-grid">
+                {% for product_image in product.images.all %}
+                    <div class="product-detail__gallery-item">
+                        <img
+                            src="{{ product_image.image.url }}"
+                            alt="{{ product_image.alt_text }}"
+                            loading="lazy"
+                        >
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
 
-        <p>{{ form.quantity.label }}</p>
-        {{ form.quantity }}
-
-        <button
-            type="submit"
-            {% if not has_stock %}disabled{% endif %}
+    <div class="product-detail__info">
+        <a
+            class="product-detail__back"
+            href="{% url 'products:catalog' %}"
         >
-            Добавить в корзину
-        </button>
-    </form>
-{% endif %}
+            ← Вернуться в каталог
+        </a>
+
+        <p class="product-detail__category">
+            {{ product.category.name }}
+        </p>
+
+        <h1 class="product-detail__title">
+            {{ product.name }}
+        </h1>
+
+        <div class="product-detail__price">
+            {% if product.discount %}
+                <strong class="product-detail__price-current">
+                    {{ product.discounted_price }} ₽
+                </strong>
+
+                <s class="product-detail__price-old">
+                    {{ product.price }} ₽
+                </s>
+
+                <span class="product-detail__discount">
+                    −{{ product.discount }}%
+                </span>
+            {% else %}
+                <strong class="product-detail__price-current">
+                    {{ product.price }} ₽
+                </strong>
+            {% endif %}
+        </div>
+
+        {% if has_stock %}
+            <div class="product-detail__stock">
+                В наличии
+            </div>
+        {% else %}
+            <div class="product-detail__stock product-detail__stock--empty">
+                Нет в наличии
+            </div>
+        {% endif %}
+
+        {% if product.description %}
+            <div class="product-detail__description">
+                {{ product.description|linebreaks }}
+            </div>
+        {% endif %}
+
+        {% if form.color.field.choices %}
+            <form
+                class="product-form"
+                method="post"
+                action="{% url 'cart:add_to_cart' product.slug %}"
+            >
+                {% csrf_token %}
+
+                <div class="product-form__field">
+                    <span class="product-form__label">
+                        {{ form.color.label }}
+                    </span>
+
+                    <div class="product-options">
+                        {% for radio in form.color %}
+                            <label class="product-option">
+                                {{ radio.tag }}
+
+                                <span>
+                                    {{ radio.choice_label }}
+                                </span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="product-form__field">
+                    <span class="product-form__label">
+                        {{ form.size.label }}
+                    </span>
+
+                    <div class="product-options">
+                        {% for radio in form.size %}
+                            <label class="product-option">
+                                {{ radio.tag }}
+
+                                <span>
+                                    {{ radio.choice_label }}
+                                </span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="product-form__field">
+                    <label
+                        class="product-form__label"
+                        for="{{ form.quantity.id_for_label }}"
+                    >
+                        {{ form.quantity.label }}
+                    </label>
+
+                    <input
+                        class="product-form__quantity"
+                        type="number"
+                        id="{{ form.quantity.id_for_label }}"
+                        name="{{ form.quantity.html_name }}"
+                        value="1"
+                        min="1"
+                    >
+                </div>
+
+                <button
+                    class="product-form__button"
+                    type="submit"
+                    {% if not has_stock %}disabled{% endif %}
+                >
+                    {% if has_stock %}
+                        Добавить в корзину
+                    {% else %}
+                        Нет в наличии
+                    {% endif %}
+                </button>
+            </form>
+        {% endif %}
+
+        {{ form.available_combinations|json_script:"available-product-variants" }}
+    </div>
 </section>
 
 {% if viewed_products %}
-<section>
-    <h2>Недавно смотрели</h2>
+    <section class="product-recommendations">
+        <div class="product-recommendations__header">
+            <h2 class="product-recommendations__title">
+                Недавно смотрели
+            </h2>
+        </div>
 
-    {% for viewed_product in viewed_products %}
-        <a href="{% url 'products:product_detail' viewed_product.slug %}">
-            {{ viewed_product.name }}
-        </a>
-    {% endfor %}
-</section>
+        <div class="product-recommendations__grid">
+            {% for product in viewed_products %}
+                {% include "products/includes/product_card.html" with product=product only %}
+            {% endfor %}
+        </div>
+    </section>
 {% endif %}
 
-<section>
-    <h2>Другие товары</h2>
+<section class="product-recommendations">
+    <div class="product-recommendations__header">
+        <h2 class="product-recommendations__title">
+            Другие товары
+        </h2>
+    </div>
 
-    {% for related_product in related_products %}
-        <a href="{% url 'products:product_detail' related_product.slug %}">
-            {{ related_product.name }}
-        </a>
-    {% empty %}
-        <p>Других товаров пока нет.</p>
-    {% endfor %}
+    {% if related_products %}
+        <div class="product-recommendations__grid">
+            {% for product in related_products %}
+                {% include "products/includes/product_card.html" with product=product only %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="product-recommendations__empty">
+            Других товаров пока нет.
+        </p>
+    {% endif %}
 </section>
+{% endblock %}
+
+{% block extra_js %}
+    <script
+        src="{% static 'products/js/product_detail.js' %}"
+        defer
+    ></script>
 {% endblock %}

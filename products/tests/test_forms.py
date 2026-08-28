@@ -158,3 +158,19 @@ class AddToCartFormTests(TestCase):
             "Товар не найден.",
             form.non_field_errors(),
         )
+
+    def test_form_contains_only_available_combinations(self):
+        form = AddToCartForm(
+            product=self.product,
+        )
+
+        self.assertEqual(
+            form.available_combinations,
+            [
+                {
+                    "color": ProductVariant.Color.BLACK,
+                    "size": ProductVariant.Size.M,
+                    "stock": 5,
+                }
+            ],
+        )
