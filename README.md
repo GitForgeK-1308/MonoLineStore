@@ -1,6 +1,12 @@
 # 🛍️ MonoLine Store
 
 [![CI](https://github.com/GitForgeK-1308/MonoLineStore/actions/workflows/ci.yml/badge.svg)](https://github.com/GitForgeK-1308/MonoLineStore/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Django](https://img.shields.io/badge/Django-6.1%2B-092E20?logo=django&logoColor=white)](https://www.djangoproject.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Redis](https://img.shields.io/badge/Redis-8-DC382D?logo=redis&logoColor=white)](https://redis.io/)
+[![Celery](https://img.shields.io/badge/Celery-5.6%2B-37814A?logo=celery&logoColor=white)](https://docs.celeryq.dev/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 
 > Современный интернет-магазин на Django с каталогом товаров, полнотекстовым поиском, корзиной и системой заказов.
 
