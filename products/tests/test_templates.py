@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils.formats import localize
 
-from products.models import Category, Product
+from products.models import Category, Gender, Product
 
 
 class ProductCardTemplateTests(TestCase):
@@ -17,8 +17,14 @@ class ProductCardTemplateTests(TestCase):
             slug="template-clothes",
         )
 
+        cls.gender = Gender.objects.create(
+            name="Мужской",
+            slug="template-male",
+        )
+
         cls.regular_product = Product.objects.create(
             category=cls.category,
+            gender=cls.gender,
             name="MONO T-Shirt",
             slug="template-mono-t-shirt",
             price=Decimal("2000.00"),
@@ -26,6 +32,7 @@ class ProductCardTemplateTests(TestCase):
 
         cls.discounted_product = Product.objects.create(
             category=cls.category,
+            gender=cls.gender,
             name="MONO Hoodie",
             slug="template-mono-hoodie",
             price=Decimal("5000.00"),
@@ -56,6 +63,16 @@ class ProductCardTemplateTests(TestCase):
                     self.regular_product.slug,
                 ],
             ),
+            html,
+        )
+
+    def test_product_card_displays_gender(self):
+        html = self.render_card(
+            self.regular_product,
+        )
+
+        self.assertIn(
+            self.regular_product.gender.name,
             html,
         )
 

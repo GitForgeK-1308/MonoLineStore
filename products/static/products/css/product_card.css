@@ -99,3 +99,31 @@
 
     background: #666666;
 }
+
+.product-card__gender {
+    margin: -2px 0 8px;
+
+    color: #777777;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+}
+
+.product-card__stock {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+
+    padding: 7px 10px;
+
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+
+    background: #111111;
+}
+
+.product-card__stock--out {
+    opacity: 0.95;
+}
+

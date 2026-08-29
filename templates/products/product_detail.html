@@ -20,8 +20,10 @@
         <div class="product-detail__main-image">
             {% if product.image %}
                 <img
+                    class="product-detail__main-image-img"
                     src="{{ product.image.url }}"
                     alt="{{ product.name }}"
+                    data-main-image
                 >
             {% else %}
                 <span class="product-detail__placeholder">
@@ -30,16 +32,38 @@
             {% endif %}
         </div>
 
-        {% if product.images.all %}
-            <div class="product-detail__gallery-grid">
+        {% if product.image or product.images.all %}
+            <div class="product-detail__thumbnails">
+                {% if product.image %}
+                    <button
+                        class="product-detail__thumbnail product-detail__thumbnail--active"
+                        type="button"
+                        data-image="{{ product.image.url }}"
+                        data-alt="{{ product.name }}"
+                        aria-label="Показать основное изображение"
+                    >
+                        <img
+                            src="{{ product.image.url }}"
+                            alt="{{ product.name }}"
+                            loading="lazy"
+                        >
+                    </button>
+                {% endif %}
+
                 {% for product_image in product.images.all %}
-                    <div class="product-detail__gallery-item">
+                    <button
+                        class="product-detail__thumbnail"
+                        type="button"
+                        data-image="{{ product_image.image.url }}"
+                        data-alt="{{ product_image.alt_text }}"
+                        aria-label="Показать изображение {{ forloop.counter }}"
+                    >
                         <img
                             src="{{ product_image.image.url }}"
                             alt="{{ product_image.alt_text }}"
                             loading="lazy"
                         >
-                    </div>
+                    </button>
                 {% endfor %}
             </div>
         {% endif %}

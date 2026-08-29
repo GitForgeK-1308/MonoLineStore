@@ -24,7 +24,7 @@
             {% endif %}
 
             {% if not product.in_stock %}
-                <span class="product-card__availability">
+                <span class="product-card__stock product-card__stock--out">
                     Нет в наличии
                 </span>
             {% endif %}
@@ -34,6 +34,12 @@
             {{ product.name }}
         </h3>
     </a>
+
+    {% if product.gender %}
+        <p class="product-card__gender">
+            {{ product.gender.name }}
+        </p>
+    {% endif %}
 
     <p class="product-card__price">
         {% if product.discount %}

@@ -7,10 +7,16 @@
 }
 
 .product-detail__gallery {
+    display: grid;
+    grid-template-columns: 82px minmax(0, 1fr);
+    gap: 12px;
+
     min-width: 0;
 }
 
 .product-detail__main-image {
+    grid-column: 2;
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -27,33 +33,68 @@
     height: 100%;
 
     object-fit: cover;
+
+    transition: opacity 0.2s ease;
+}
+
+.product-detail__main-image-img.is-changing {
+    opacity: 0.35;
 }
 
 .product-detail__placeholder {
     color: #999999;
 }
 
-.product-detail__gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+.product-detail__thumbnails {
+    grid-column: 1;
+    grid-row: 1;
+
+    display: flex;
+    flex-direction: column;
     gap: 10px;
 
-    margin-top: 10px;
+    max-height: 100%;
+    overflow-y: auto;
+
+    scrollbar-width: thin;
 }
 
-.product-detail__gallery-item {
-    overflow: hidden;
+.product-detail__thumbnail {
+    flex: 0 0 auto;
 
+    width: 82px;
     aspect-ratio: 3 / 4;
 
+    padding: 0;
+
+    overflow: hidden;
+
     background: #f3f3f3;
+
+    border: 1px solid transparent;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        opacity 0.2s ease;
 }
 
-.product-detail__gallery-item img {
+.product-detail__thumbnail img {
+    display: block;
+
     width: 100%;
     height: 100%;
 
     object-fit: cover;
+}
+
+.product-detail__thumbnail:hover {
+    opacity: 0.75;
+}
+
+.product-detail__thumbnail--active {
+    border-color: #111111;
 }
 
 .product-detail__info {
@@ -298,6 +339,14 @@
         gap: 40px;
     }
 
+    .product-detail__gallery {
+        grid-template-columns: 72px minmax(0, 1fr);
+    }
+
+    .product-detail__thumbnail {
+        width: 72px;
+    }
+
     .product-detail__info {
         max-width: 650px;
     }
@@ -312,8 +361,30 @@
         margin-bottom: 64px;
     }
 
-    .product-detail__gallery-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+    .product-detail__gallery {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .product-detail__main-image {
+        order: 1;
+    }
+
+    .product-detail__thumbnails {
+        order: 2;
+
+        display: flex;
+        flex-direction: row;
+
+        max-width: 100%;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+    .product-detail__thumbnail {
+        width: 72px;
     }
 
     .product-recommendations {
