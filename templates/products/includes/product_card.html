@@ -22,6 +22,12 @@
                     −{{ product.discount }}%
                 </span>
             {% endif %}
+
+            {% if not product.in_stock %}
+                <span class="product-card__availability">
+                    Нет в наличии
+                </span>
+            {% endif %}
         </div>
 
         <h3 class="product-card__title">
