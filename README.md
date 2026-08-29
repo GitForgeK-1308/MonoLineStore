@@ -20,6 +20,123 @@
 
 ---
 
+## 📸 Скриншоты
+
+Ниже представлены основные пользовательские сценарии и интерфейс приложения.
+
+<details>
+<summary><strong>🏠 Главная страница</strong></summary>
+
+![Главная страница](<docs/screenshots/главная/1.png>)
+
+![Главная страница — товары](<docs/screenshots/главная/2.png>)
+
+![Главная страница — категории](<docs/screenshots/главная/3.png>)
+
+![Главная страница — дополнительные товары](<docs/screenshots/главная/4.png>)
+
+</details>
+
+<details>
+<summary><strong>🛍️ Каталог и фильтрация</strong></summary>
+
+![Каталог](<docs/screenshots/каталог/1.png>)
+
+![Каталог](<docs/screenshots/каталог/2.png>)
+
+![Фильтры](<docs/screenshots/фильтры/1.png>)
+
+![Фильтры](<docs/screenshots/фильтры/2.png>)
+
+![Фильтры](<docs/screenshots/фильтры/3.png>)
+
+</details>
+
+<details>
+<summary><strong>👕 Страница товара</strong></summary>
+
+![Страница товара](<docs/screenshots/товар/1.png>)
+
+![Страница товара](<docs/screenshots/товар/2.png>)
+
+![Страница товара](<docs/screenshots/товар/3.png>)
+
+</details>
+
+<details>
+<summary><strong>🛒 Корзина</strong></summary>
+
+![Товар добавлен в корзину](<docs/screenshots/товар добавлен в корзину/1.png>)
+
+![Количество товара в корзине](<docs/screenshots/количество в корзине/1.png>)
+
+![Товар удалён из корзины](<docs/screenshots/товар удален из корзины/1.png>)
+
+</details>
+
+<details>
+<summary><strong>📦 Оформление и история заказов</strong></summary>
+
+![Оформление заказа](<docs/screenshots/оформление заказов/1.png>)
+
+![Оформление заказа](<docs/screenshots/оформление заказов/2.png>)
+
+![Мои заказы](<docs/screenshots/мои заказы/1.png>)
+
+![Мои заказы](<docs/screenshots/мои заказы/2.png>)
+
+![Пустые заказы](<docs/screenshots/пустые заказы/1.png>)
+
+![Чек о покупке](<docs/screenshots/чек о покупке/1.png>)
+
+</details>
+
+<details>
+<summary><strong>👤 Авторизация и личный кабинет</strong></summary>
+
+![Регистрация](<docs/screenshots/регистрация/1.png>)
+
+![Регистрация](<docs/screenshots/регистрация/2.png>)
+
+![Вход](<docs/screenshots/вход/1.png>)
+
+![Личный кабинет](<docs/screenshots/личный кабинет/1.png>)
+
+</details>
+
+<details>
+<summary><strong>🔐 Восстановление пароля</strong></summary>
+
+![Восстановление пароля](<docs/screenshots/восстановление пароля/1.png>)
+
+![Восстановление пароля](<docs/screenshots/восстановление пароля/2.png>)
+
+![Восстановление пароля](<docs/screenshots/восстановление пароля/3.png>)
+
+![Восстановление пароля](<docs/screenshots/восстановление пароля/4.png>)
+
+</details>
+
+<details>
+<summary><strong>⚙️ Административная панель</strong></summary>
+
+![Административная панель](<docs/screenshots/админка/1.png>)
+
+![Административная панель](<docs/screenshots/админка/2.png>)
+
+![Административная панель](<docs/screenshots/админка/3.png>)
+
+![Административная панель](<docs/screenshots/админка/4.png>)
+
+</details>
+
+<details>
+<summary><strong>⚠️ Дополнительные состояния</strong></summary>
+
+![Нет товара](<docs/screenshots/нет товара/1.png>)
+
+</details>
+
 ## ✨ Возможности
 
 ### 👤 Пользователи
