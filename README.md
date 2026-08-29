@@ -1,5 +1,7 @@
 # 🛍️ MonoLine Store
 
+[![CI](https://github.com/GitForgeK-1308/MonoLineStore/actions/workflows/ci.yml/badge.svg)](https://github.com/GitForgeK-1308/MonoLineStore/actions/workflows/ci.yml)
+
 > Интернет-магазин на Django с каталогом товаров, поиском, корзиной и системой заказов.
 
 **MonoLine Store** — веб-приложение интернет-магазина, разработанное на Django.
