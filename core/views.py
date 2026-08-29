@@ -1,6 +1,7 @@
+from django.db.models import Exists, OuterRef
 from django.views.generic import TemplateView
 
-from products.models import Category, Product
+from products.models import Category, Product, ProductVariant
 
 
 class HomeView(TemplateView):
@@ -9,7 +10,14 @@ class HomeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        products = Product.objects.all()
+        products = Product.objects.annotate(
+            has_stock=Exists(
+                ProductVariant.objects.filter(
+                    product_id=OuterRef("pk"),
+                    stock__gt=0,
+                )
+            ),
+        ).select_related("gender")
 
         context["categories"] = Category.objects.order_by(
             "name",
